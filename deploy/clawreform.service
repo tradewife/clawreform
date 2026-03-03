@@ -1,0 +1,38 @@
+[Unit]
+Description=OpenFang Agent OS Daemon
+Documentation=https://github.com/clawreform-ai/clawreform
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=clawreform
+Group=clawreform
+ExecStart=/usr/local/bin/clawreform start
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+# Environment
+EnvironmentFile=-/etc/clawreform/env
+WorkingDirectory=/var/lib/clawreform
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/clawreform
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+MemoryDenyWriteExecute=false
+RestrictRealtime=true
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

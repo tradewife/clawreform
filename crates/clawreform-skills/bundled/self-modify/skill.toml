@@ -1,0 +1,12 @@
+[skill]
+name = "self-modify"
+version = "0.1.0"
+description = "Enables OpenFang to modify itself safely through natural language"
+author = "OpenFang Team"
+tags = ["meta", "self-modification", "development", "code-generation"]
+
+[skill.capabilities]
+can_modify_code = true
+can_create_files = true
+can_run_tests = true
+requires_approval = true
