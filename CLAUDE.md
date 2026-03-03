@@ -1,10 +1,12 @@
-# ClawReform — Agent Instructions
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-ClawReform is an open-source Agent Operating System written in Rust (14 crates).
+ClawReform is an open-source Agent Operating System written in Rust (14 crates in a Cargo workspace).
 - Config: `~/.clawreform/config.toml`
 - Default API: `http://127.0.0.1:4200`
-- CLI binary: `target/release/clawreform.exe` (or `target/debug/clawreform.exe`)
+- CLI binary: `target/release/clawreform` (or `target/debug/clawreform`)
 
 ## Build & Verify Workflow
 After every feature implementation, run ALL THREE checks:
@@ -12,6 +14,12 @@ After every feature implementation, run ALL THREE checks:
 cargo build --workspace --lib          # Must compile (use --lib if exe is locked)
 cargo test --workspace                 # All tests must pass (currently 1744+)
 cargo clippy --workspace --all-targets -- -D warnings  # Zero warnings
+```
+
+### Run a Single Test
+```bash
+cargo test -p <crate> <test_name>      # e.g., cargo test -p clawreform-kernel test_spawn
+cargo test -p <crate> --test <file>    # Run all tests in a specific test file
 ```
 
 ## MANDATORY: Live Integration Testing
@@ -25,8 +33,16 @@ cargo clippy --workspace --all-targets -- -D warnings  # Zero warnings
 
 #### Step 1: Stop any running daemon
 ```bash
+# Linux
+pkill -f clawreform
+# Or find and kill manually
+ps aux | grep clawreform
+kill <pid>
+
+# Windows (MSYS2/Git Bash)
 tasklist | grep -i clawreform
 taskkill //PID <pid> //F
+
 # Wait 2-3 seconds for port to release
 sleep 3
 ```
@@ -38,7 +54,7 @@ cargo build --release -p clawreform-cli
 
 #### Step 3: Start daemon with required API keys
 ```bash
-GROQ_API_KEY=<key> target/release/clawreform.exe start &
+GROQ_API_KEY=<key> target/release/clawreform start &
 sleep 6  # Wait for full boot
 curl -s http://127.0.0.1:4200/api/health  # Verify it's up
 ```
@@ -86,6 +102,10 @@ curl -s http://127.0.0.1:4200/ | grep -c "newComponentName"
 
 #### Step 8: Cleanup
 ```bash
+# Linux
+pkill -f clawreform
+
+# Windows (MSYS2/Git Bash)
 tasklist | grep -i clawreform
 taskkill //PID <pid> //F
 ```
@@ -108,16 +128,44 @@ taskkill //PID <pid> //F
 
 ## Architecture Notes
 - **Don't touch `clawreform-cli`** — user is actively building the interactive CLI
-- `KernelHandle` trait avoids circular deps between runtime and kernel
+- `KernelHandle` trait (defined in `clawreform-runtime`, implemented on `ClawReformKernel` in `clawreform-kernel`) avoids circular deps between runtime and kernel
 - `AppState` in `server.rs` bridges kernel to API routes
 - New routes must be registered in `server.rs` router AND implemented in `routes.rs`
 - Dashboard is Alpine.js SPA in `static/index_body.html` — new tabs need both HTML and JS data/methods
 - Config fields need: struct field + `#[serde(default)]` + Default impl entry + Serialize/Deserialize derives
 
+### Crate Dependency Order (lower crates depend on nothing above them)
+```
+clawreform-cli / clawreform-desktop
+    ↓
+clawreform-api
+    ↓
+clawreform-kernel
+    ↓
+clawreform-runtime / clawreform-channels / clawreform-wire / clawreform-skills / clawreform-migrate
+    ↓
+clawreform-memory
+    ↓
+clawreform-types
+```
+
+### Key Files by Task
+| Task | Key Files |
+|------|-----------|
+| Add API endpoint | `crates/clawreform-api/src/server.rs` (route), `crates/clawreform-api/src/routes.rs` (handler) |
+| Add tool | `crates/clawreform-runtime/src/tool_runner.rs` |
+| Add config field | `crates/clawreform-types/src/config.rs` (struct + Default impl) |
+| Add channel adapter | `crates/clawreform-channels/src/<platform>.rs` + `lib.rs` |
+| Add skill | `crates/clawreform-skills/bundled/<skill>/skill.toml` |
+| Modify dashboard | `static/index_body.html` (Alpine.js SPA) |
+
 ## Common Gotchas
-- `clawreform.exe` may be locked if daemon is running — use `--lib` flag or kill daemon first
+- `clawreform` binary may be locked if daemon is running — use `--lib` flag or kill daemon first
 - `PeerRegistry` is `Option<PeerRegistry>` on kernel but `Option<Arc<PeerRegistry>>` on `AppState` — wrap with `.as_ref().map(|r| Arc::new(r.clone()))`
 - Config fields added to `KernelConfig` struct MUST also be added to the `Default` impl or build fails
 - `AgentLoopResult` field is `.response` not `.response_text`
 - CLI command to start daemon is `start` not `daemon`
-- On Windows: use `taskkill //PID <pid> //F` (double slashes in MSYS2/Git Bash)
+- Process management:
+  - Linux: `pkill -f clawreform` or `kill <pid>`
+  - Windows (MSYS2/Git Bash): `taskkill //PID <pid> //F` (double slashes)
+- Dashboard tabs require both HTML elements AND corresponding Alpine.js data/methods in `index_body.html`
