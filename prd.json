@@ -5,7 +5,7 @@
       "id": "US001",
       "title": "Add Stripe checkout upsell CTA",
       "description": "Add prominent upgrade button in dashboard that links to Stripe checkout. Track click-throughs.",
-      "passes": false,
+      "passes": true,
       "revenueImpact": "$5k projected in 7 days",
       "priority": 1
     },

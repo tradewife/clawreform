@@ -3357,6 +3357,21 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
           </div>
 
           <!-- Budget tab -->
+          <!-- Premium Upgrade CTA -->
+          <div class="card mb-4" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border: none; border-radius: 8px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <div style="color: white; font-weight: 600; font-size: 14px; margin-bottom: 4px;">🚀 Upgrade to Pro</div>
+                <div style="color: rgba(255,255,255,0.85); font-size: 12px;">Unlock unlimited agents, priority support & advanced automation</div>
+              </div>
+              <a href="https://billing.stripe.com/p/test-checkout" target="_blank" rel="noopener" 
+                 class="btn" 
+                 style="background: white; color: #6366f1; border: none; font-weight: 600; padding: 8px 16px; border-radius: 6px; white-space: nowrap;">
+                Upgrade Now →
+              </a>
+            </div>
+          </div>
+          
           <div x-show="tab === 'budget' && $store.app.developerMode" x-data="{
             budgetData: null, agentRanking: [], budgetLoading: true,
             editMode: false,
