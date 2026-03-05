@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Container version tag without v (for docker publish), e.g. 0.2.2"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -17,6 +23,7 @@ jobs:
   # Produces: .msi, .exe (Windows) | .dmg, .app (macOS) | .AppImage, .deb (Linux)
   # Also generates and uploads latest.json (the auto-updater manifest)
   desktop:
+    if: github.event_name == 'push'
     name: Desktop / ${{ matrix.platform.name }}
     strategy:
       fail-fast: false
@@ -136,6 +143,7 @@ jobs:
 
   # ── CLI Binary (5 platforms) ──────────────────────────────────────────────
   cli:
+    if: github.event_name == 'push'
     name: CLI / ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -220,7 +228,12 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Extract version
         id: version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+          fi
       - name: Build and push (multi-arch)
         uses: docker/build-push-action@v6
         with:
