@@ -25,7 +25,7 @@ function organismPage() {
       {
         id: 'memory',
         label: 'Memory Views',
-        files: ['CORE.md', 'OVERVIEW.md', 'PROJECT.md']
+        files: ['CORE.md', 'OVERVIEW.md', 'PROJECT.md', 'COLLECTIVE.md']
       }
     ],
 
