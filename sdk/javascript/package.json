@@ -30,5 +30,8 @@
     "index.js",
     "index.d.ts",
     "README.md"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
