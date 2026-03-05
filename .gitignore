@@ -55,3 +55,4 @@ autoclaw-test/
 # Local proof artifacts
 output/playwright/
 crates/clawreform-desktop/gen/schemas/macOS-schema.json
+crates/clawreform-desktop/gen/schemas/linux-schema.json
