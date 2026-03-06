@@ -14,7 +14,7 @@
 <p align="center">
   <a href="https://github.com/aegntic/clawreform"><img src="https://img.shields.io/badge/GitHub-aegntic%2Fclawreform-181717?style=flat-square&logo=github" alt="GitHub" /></a>
   <img src="https://img.shields.io/badge/Rust-1.75+-CE4A00?style=flat-square&logo=rust&logoColor=white" alt="Rust 1.75+" />
-  <img src="https://img.shields.io/badge/version-0.2.1-C9A227?style=flat-square" alt="v0.2.1" />
+  <img src="https://img.shields.io/badge/version-0.2.2-C9A227?style=flat-square" alt="v0.2.2" />
   <img src="https://img.shields.io/badge/license-MIT_%7C_Apache--2.0-4B8BBE?style=flat-square" alt="MIT / Apache-2.0" />
   <img src="https://img.shields.io/badge/tests-1744%2B_passing-2EA44F?style=flat-square" alt="1744+ tests" />
   <img src="https://img.shields.io/badge/runtime_deps-ZERO-C9A227?style=flat-square" alt="Zero runtime deps" />
@@ -37,7 +37,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    c l a w R E F O R M   ·   v 0 . 2 . 1                   │
+│                    c l a w R E F O R M   ·   v 0 . 2 . 2                   │
 │                                                               by  ae.ltd     │
 ├──────────────┬──────────────┬──────────────┬──────────────┬─────────────────┤
 │    146 K     │    141       │    27        │    60        │       0         │
