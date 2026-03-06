@@ -1,0 +1,57 @@
+# Clipmart Template: Content Agency
+# A content marketing agency with strategist, writer, designer, and social agent.
+
+[template]
+name = "content-agency"
+title = "Content Agency"
+description = "4-agent content team: strategist, copywriter, designer, social media manager."
+version = "1.0.0"
+author = "aegntic.ai"
+tags = ["marketing", "content", "agency"]
+
+[budget]
+total = 150.00
+currency = "USD"
+
+[[goals]]
+title = "Publish 30 blog posts this month"
+description = "Create and publish SEO-optimized blog content across 3 verticals."
+budget = 80.00
+status = "active"
+
+[[goals]]
+title = "Grow social following by 500"
+description = "Increase followers across Twitter, LinkedIn, and YouTube."
+budget = 30.00
+status = "pending"
+
+[[agents]]
+name = "content-strategist"
+department = "Marketing"
+model = "anthropic/claude-sonnet-4-20250514"
+description = "Content strategist. Plans editorial calendar and content briefs."
+budget_limit = 40.00
+
+[[agents]]
+name = "copywriter"
+department = "Marketing"
+reports_to = "content-strategist"
+model = "anthropic/claude-sonnet-4-20250514"
+description = "Copywriter. Drafts blog posts, landing pages, and ad copy."
+budget_limit = 40.00
+
+[[agents]]
+name = "designer"
+department = "Marketing"
+reports_to = "content-strategist"
+model = "google/gemini-2.5-flash"
+description = "Visual designer. Creates social graphics, thumbnails, and infographics."
+budget_limit = 30.00
+
+[[agents]]
+name = "social-manager"
+department = "Marketing"
+reports_to = "content-strategist"
+model = "google/gemini-2.5-flash"
+description = "Social media manager. Schedules posts, engages audience, tracks metrics."
+budget_limit = 25.00

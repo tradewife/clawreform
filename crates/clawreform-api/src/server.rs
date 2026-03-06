@@ -501,6 +501,23 @@ pub async fn build_router(
         // Webhook trigger endpoints (external event injection)
         .route("/hooks/wake", axum::routing::post(routes::webhook_wake))
         .route("/hooks/agent", axum::routing::post(routes::webhook_agent))
+        // Company Orchestration endpoints (Paperclip integration)
+        .route(
+            "/api/company/overview",
+            axum::routing::get(routes::company_overview),
+        )
+        .route(
+            "/api/company/goals",
+            axum::routing::get(routes::list_company_goals).post(routes::create_company_goal),
+        )
+        .route(
+            "/api/company/goals/{id}",
+            axum::routing::put(routes::update_company_goal).delete(routes::delete_company_goal),
+        )
+        .route(
+            "/api/company/org",
+            axum::routing::get(routes::company_org),
+        )
         .route("/api/shutdown", axum::routing::post(routes::shutdown))
         // Chat commands endpoint (dynamic slash menu)
         .route("/api/commands", axum::routing::get(routes::list_commands))

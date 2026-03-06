@@ -5719,6 +5719,9 @@ mod tests {
             workspace: None,
             generate_identity_files: true,
             exec_policy: None,
+            department: None,
+            reports_to: None,
+            budget_limit: None,
         };
         manifest.capabilities.tools = vec!["file_read".to_string(), "web_fetch".to_string()];
         manifest.capabilities.agent_spawn = true;
@@ -5754,6 +5757,9 @@ mod tests {
             workspace: None,
             generate_identity_files: true,
             exec_policy: None,
+            department: None,
+            reports_to: None,
+            budget_limit: None,
         }
     }
 

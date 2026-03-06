@@ -133,7 +133,7 @@ Flat context windows degrade. Long-term dumps bloat. clawREFORM implements a **f
 
 **Cross-agent knowledge that earns its way into long-term memory.**
 
-When multiple agents share a COLLECTIVE.md organ, every observation they make is scored against a confidence model. High-confidence claims get automatically promoted up the Memory Ladder — with a full audit trail every human can review.
+When multiple agents share a COLLECTIVE.md AgentDNA file, every observation they make is scored against a confidence model. High-confidence claims get automatically promoted up the Memory Ladder — with a full audit trail every human can review.
 
 ```
   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
@@ -204,15 +204,15 @@ clawREFORM ships a full code-modification pipeline. Tell it to add a feature in 
 
 ### vs. the clawREFORM Ecosystem
 
-> clawREFORM is the **Kernel** in a 4-tier hierarchy. Understanding where it sits explains why it exists.
+> clawREFORM sits at the **top** of a 4-tier hierarchy. Understanding where it sits explains why it exists.
 
 ```
   ┌────────────────────────────────────────────────────────────────────────┐
   │              T H E   A E G N T I C . A I   H I E R A R C H Y         │
   │                                                                        │
-  │  TIER 0  ·  aegnt-unltd  (CEO)                                        │
+  │  TIER 0  ·  clawREFORM   (CEO)                                        │
   │              Strategic brain. Learns your business. Directs divisions. │
-  │              Smart Data Space · Agentic RAG · Plan-Act-Reflect loop   │
+  │              Company Goals · Org Chart · Budget Limits · RAG          │
   │                              │                                         │
   │  TIER 1  ·  Agent-Zero  (Senior Manager)                               │
   │              Python-based hierarchical orchestrator in Docker.         │
@@ -229,14 +229,15 @@ clawREFORM ships a full code-modification pipeline. Tell it to add a feature in 
   │  ─────────────────────────────────────────────────────────────────    │
   │                                                                        │
   │  HOW CLAWREFORM FITS:                                                  │
-  │    clawREFORM IS the Kernel that powers Tier 2 (OpenClaw) and         │
-  │    the platform dashboard that monitors all 4 tiers in real-time.     │
+  │    clawREFORM IS the Tier 0 (CEO) orchestrator that governs the       │
+  │    hierarchy. It provides the Company Dashboard (Goal Tracking,       │
+  │    Org Charts, Budgets) to monitor all 4 tiers.                       │
   └────────────────────────────────────────────────────────────────────────┘
 ```
 
 | | **clawREFORM** | **OpenClaw** | **ZeroClaw** | **Agent-Zero** |
 |---|:---:|:---:|:---:|:---:|
-| **Role in hierarchy** | Kernel + Dashboard | Project Manager | Staff Worker | Senior Manager |
+| **Role in hierarchy** | CEO + Dashboard | Project Manager | Staff Worker | Senior Manager |
 | **Language** | Rust 🦀 | Rust 🦀 | Rust 🦀 | Python 🐍 |
 | **Binary size** | ~8 MB | ~4 MB | **3.4 MB** | Docker image |
 | **Cold start** | ~200ms | ~80ms | **<10ms** | ~3–5s |
@@ -330,7 +331,7 @@ flowchart LR
     U --> DESK["Tauri 2.0\nDesktop App"]
     WEB --> API["REST / WS / SSE\naxum 0.8 · 100+ endpoints"]
     DESK --> API
-    CLI --> K["🧠 Kernel\nOrchestrator"]
+    CLI --> K["🧠 Tier 0 (CEO)\nOrchestrator"]
     API --> K
     K --> DNA["AgentDNA Injector\n15-file deterministic stack"]
     DNA --> LLM["LLM Router\n27 providers · 141 models\nfallback · cost metering"]
@@ -547,7 +548,7 @@ clawreform/
 | | |
 |---|---|
 | [Getting Started](docs/getting-started.md) | Install, init, first agent in 5 minutes |
-| [AgentDNA System](docs/organ-system.md) | Designing agents with file stacks |
+| [AgentDNA™ System](docs/agentdna-system.md) | Designing agents with file stacks |
 | [Architecture](docs/architecture.md) | 13-crate deep dive |
 | [Providers](docs/providers.md) | All 27 LLM providers + smart routing |
 | [Security](docs/security.md) | Full security model reference |
@@ -586,7 +587,7 @@ Dual-licensed under **[MIT](LICENSE-MIT)** or **[Apache 2.0](LICENSE-APACHE)** �
   MCP server · Model Context Protocol · Google A2A protocol
   agent memory management · agent identity · agent personality files
   AgentDNA · Memory Ladder · Collective Conscience · Self-Rewrite Engine
-  OpenClaw alternative · ZeroClaw · Agent-Zero · aegnt-unltd
+  OpenClaw alternative · ZeroClaw · Agent-Zero · clawREFORM CEO
   clawREFORM · aegntic · ae.ltd · open source AI agent
   LLM provider router · multi-model AI · 27 LLM providers · OpenRouter
   AI agent swarm · multi-agent system · agent hierarchy

@@ -8700,6 +8700,225 @@ pub async fn list_commands(State(state): State<Arc<AppState>>) -> impl IntoRespo
     Json(serde_json::json!({"commands": commands}))
 }
 
+// ---------------------------------------------------------------------------
+// Company Orchestration endpoints (Paperclip integration)
+// ---------------------------------------------------------------------------
+
+/// GET /api/company/overview — Company-level dashboard data (goals, budget, org).
+pub async fn company_overview(State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    let agents = state.kernel.registry.list();
+
+    // Derive org chart from agent manifests
+    let org: Vec<serde_json::Value> = agents
+        .iter()
+        .map(|a| {
+            serde_json::json!({
+                "id": a.id.to_string(),
+                "name": a.name,
+                "role": a.manifest.department.as_deref().unwrap_or("Staff"),
+                "reports_to": a.manifest.reports_to,
+                "budget_limit": a.manifest.budget_limit,
+                "state": format!("{:?}", a.state),
+            })
+        })
+        .collect();
+
+    // Aggregate budget from all agents
+    let total_budget: f64 = agents
+        .iter()
+        .filter_map(|a| a.manifest.budget_limit)
+        .sum();
+
+    // Calculate total spent from kernel usage tracking
+    let mut total_spent = 0.0f64;
+    for agent in &agents {
+        if let Ok((inp, out, cost)) = state.kernel.session_usage_cost(agent.id) {
+            let _ = (inp, out);
+            total_spent += cost;
+        }
+    }
+
+    // Load goals from structured memory
+    let goals = load_company_goals(&state);
+
+    (
+        StatusCode::OK,
+        Json(serde_json::json!({
+            "org_chart": org,
+            "budget": {
+                "allocated": total_budget,
+                "spent": total_spent,
+                "remaining": total_budget - total_spent,
+            },
+            "goals": goals,
+            "agent_count": agents.len(),
+        })),
+    )
+}
+
+/// GET /api/company/goals — List all company goals.
+pub async fn list_company_goals(State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    let goals = load_company_goals(&state);
+    (StatusCode::OK, Json(serde_json::json!({"goals": goals})))
+}
+
+/// POST /api/company/goals — Create a new company goal.
+pub async fn create_company_goal(
+    State(state): State<Arc<AppState>>,
+    Json(body): Json<serde_json::Value>,
+) -> impl IntoResponse {
+    let title = match body.get("title").and_then(|v| v.as_str()) {
+        Some(t) => t.to_string(),
+        None => {
+            return (
+                StatusCode::BAD_REQUEST,
+                Json(serde_json::json!({"error": "title is required"})),
+            );
+        }
+    };
+    let description = body
+        .get("description")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .to_string();
+    let budget = body.get("budget").and_then(|v| v.as_f64()).unwrap_or(0.0);
+    let status = body
+        .get("status")
+        .and_then(|v| v.as_str())
+        .unwrap_or("pending")
+        .to_string();
+
+    let goal_id = uuid::Uuid::new_v4().to_string();
+    let goal = serde_json::json!({
+        "id": goal_id,
+        "title": title,
+        "description": description,
+        "budget": budget,
+        "spent": 0.0,
+        "status": status,
+    });
+
+    // Persist to kernel structured memory under "company_goals" namespace
+    let mut goals = load_company_goals_raw(&state);
+    goals.push(goal.clone());
+    save_company_goals(&state, &goals);
+
+    (StatusCode::CREATED, Json(goal))
+}
+
+/// PUT /api/company/goals/{id} — Update a company goal.
+pub async fn update_company_goal(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+    Json(body): Json<serde_json::Value>,
+) -> impl IntoResponse {
+    let mut goals = load_company_goals_raw(&state);
+    let idx = goals.iter().position(|g| g["id"].as_str() == Some(&id));
+    match idx {
+        Some(i) => {
+            if let Some(t) = body.get("title").and_then(|v| v.as_str()) {
+                goals[i]["title"] = serde_json::Value::String(t.to_string());
+            }
+            if let Some(d) = body.get("description").and_then(|v| v.as_str()) {
+                goals[i]["description"] = serde_json::Value::String(d.to_string());
+            }
+            if let Some(b) = body.get("budget").and_then(|v| v.as_f64()) {
+                goals[i]["budget"] = serde_json::json!(b);
+            }
+            if let Some(s) = body.get("spent").and_then(|v| v.as_f64()) {
+                goals[i]["spent"] = serde_json::json!(s);
+            }
+            if let Some(s) = body.get("status").and_then(|v| v.as_str()) {
+                goals[i]["status"] = serde_json::Value::String(s.to_string());
+            }
+            save_company_goals(&state, &goals);
+            (StatusCode::OK, Json(goals[i].clone()))
+        }
+        None => (
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "Goal not found"})),
+        ),
+    }
+}
+
+/// DELETE /api/company/goals/{id} — Delete a company goal.
+pub async fn delete_company_goal(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> impl IntoResponse {
+    let mut goals = load_company_goals_raw(&state);
+    let before = goals.len();
+    goals.retain(|g| g["id"].as_str() != Some(&id));
+    if goals.len() < before {
+        save_company_goals(&state, &goals);
+        (
+            StatusCode::OK,
+            Json(serde_json::json!({"status": "deleted"})),
+        )
+    } else {
+        (
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "Goal not found"})),
+        )
+    }
+}
+
+/// GET /api/company/org — Get the org chart derived from agent registrations.
+pub async fn company_org(State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    let agents = state.kernel.registry.list();
+    let org: Vec<serde_json::Value> = agents
+        .iter()
+        .map(|a| {
+            serde_json::json!({
+                "id": a.id.to_string(),
+                "name": a.name,
+                "department": a.manifest.department,
+                "reports_to": a.manifest.reports_to,
+                "budget_limit": a.manifest.budget_limit,
+                "state": format!("{:?}", a.state),
+                "model": format!("{}/{}", a.manifest.model.provider, a.manifest.model.model),
+            })
+        })
+        .collect();
+    (StatusCode::OK, Json(serde_json::json!({"org": org})))
+}
+
+// ─── Company goals persistence helpers ─────────────────────────────────
+// Goals are stored as a JSON array in the kernel's structured memory
+// under a synthetic "system" agent using the key "company_goals".
+
+/// Synthetic system agent ID for storing company-level data.
+static COMPANY_AGENT_ID: LazyLock<clawreform_types::agent::AgentId> = LazyLock::new(|| {
+    // Deterministic UUID for the "company" namespace
+    clawreform_types::agent::AgentId(uuid::Uuid::from_bytes([
+        0xC0, 0x4A, 0xFA, 0x12, 0x00, 0x00, 0x40, 0x00,
+        0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+    ]))
+});
+
+fn load_company_goals_raw(state: &AppState) -> Vec<serde_json::Value> {
+    state
+        .kernel
+        .memory
+        .structured_get(*COMPANY_AGENT_ID, "company_goals")
+        .ok()
+        .flatten()
+        .and_then(|v| serde_json::from_value::<Vec<serde_json::Value>>(v).ok())
+        .unwrap_or_default()
+}
+
+fn load_company_goals(state: &AppState) -> Vec<serde_json::Value> {
+    load_company_goals_raw(state)
+}
+
+fn save_company_goals(state: &AppState, goals: &[serde_json::Value]) {
+    let _ = state.kernel.memory.structured_set(
+        *COMPANY_AGENT_ID,
+        "company_goals",
+        serde_json::json!(goals),
+    );
+}
+
 /// SECURITY: Validate webhook bearer token using constant-time comparison.
 fn validate_webhook_token(headers: &axum::http::HeaderMap, token_env: &str) -> bool {
     let expected = match std::env::var(token_env) {

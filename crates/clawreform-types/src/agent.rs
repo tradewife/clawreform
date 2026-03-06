@@ -470,12 +470,24 @@ pub struct AgentManifest {
     /// Default: `{workspaces_dir}/{agent_name}-{agent_id_prefix}/`
     #[serde(default)]
     pub workspace: Option<PathBuf>,
-    /// Whether to generate workspace organ files (SOUL.md, HANDS.md, USER.md, TOOLS.md, MEMORY.md, SKILLS.md, etc.) on creation.
+    /// Whether to generate workspace AgentDNA files (SOUL.md, HANDS.md, USER.md, TOOLS.md, MEMORY.md, SKILLS.md, etc.) on creation.
     #[serde(default = "default_true")]
     pub generate_identity_files: bool,
     /// Per-agent exec policy override. If None, uses global exec_policy.
     #[serde(default)]
     pub exec_policy: Option<crate::config::ExecPolicy>,
+    
+    // --- Company & Orchestration Fields ---
+
+    /// The department or team this agent belongs to.
+    #[serde(default)]
+    pub department: Option<String>,
+    /// The parent agent ID or manager name this agent reports to.
+    #[serde(default)]
+    pub reports_to: Option<String>,
+    /// The budget limit allocated to this agent context.
+    #[serde(default)]
+    pub budget_limit: Option<f64>,
 }
 
 fn default_true() -> bool {
@@ -508,6 +520,9 @@ impl Default for AgentManifest {
             workspace: None,
             generate_identity_files: true,
             exec_policy: None,
+            department: None,
+            reports_to: None,
+            budget_limit: None,
         }
     }
 }

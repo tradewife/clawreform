@@ -1,0 +1,52 @@
+# Clipmart Template: Research Lab
+# A focused research team for deep analysis, literature review, and reporting.
+
+[template]
+name = "research-lab"
+title = "Research Lab"
+description = "4-agent research team: lead researcher, literature analyst, data analyst, writer."
+version = "1.0.0"
+author = "aegntic.ai"
+tags = ["research", "analysis", "academic"]
+
+[budget]
+total = 200.00
+currency = "USD"
+
+[[goals]]
+title = "Complete research report"
+description = "Produce a comprehensive research report with citations and data analysis."
+budget = 120.00
+status = "active"
+
+[[agents]]
+name = "lead-researcher"
+department = "Research"
+model = "anthropic/claude-sonnet-4-20250514"
+description = "Lead researcher. Defines research questions and coordinates analysis."
+budget_limit = 60.00
+
+[[agents]]
+name = "lit-analyst"
+department = "Research"
+reports_to = "lead-researcher"
+model = "google/gemini-2.5-flash"
+description = "Literature analyst. Searches, summarizes, and synthesizes academic papers."
+budget_limit = 40.00
+
+[[agents]]
+name = "data-analyst"
+department = "Research"
+reports_to = "lead-researcher"
+model = "google/gemini-2.5-flash"
+description = "Data analyst. Processes datasets, generates charts and statistical analysis."
+budget_limit = 40.00
+profile = "coding"
+
+[[agents]]
+name = "writer"
+department = "Research"
+reports_to = "lead-researcher"
+model = "anthropic/claude-sonnet-4-20250514"
+description = "Technical writer. Drafts final reports, whitepapers, and presentations."
+budget_limit = 30.00

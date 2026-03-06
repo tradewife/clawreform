@@ -1,7 +1,7 @@
-// ClawReform Organism Page — organ inventory, health, and file preview
+// ClawReform AgentDNA Page — organ inventory, health, and file preview
 'use strict';
 
-function organismPage() {
+function agentdnaPage() {
   return {
     selectedAgentId: '',
     loading: false,
@@ -14,12 +14,12 @@ function organismPage() {
     groups: [
       {
         id: 'core',
-        label: 'Core Organs',
+        label: 'Core AgentDNA',
         files: ['IDENTITY.md', 'SOUL.md', 'HANDS.md', 'MEMORY.md', 'HEARTBEAT.md', 'COLLECTIVE.md']
       },
       {
         id: 'support',
-        label: 'Support Organs',
+        label: 'Support AgentDNA',
         files: ['USER.md', 'TOOLS.md', 'SKILLS.md', 'AGENTS.md', 'BOOTSTRAP.md']
       },
       {
@@ -31,7 +31,7 @@ function organismPage() {
 
     async loadData() {
       await this.ensureAgentSelected();
-      await this.loadOrganism();
+      await this.loadAgentDNA();
     },
 
     async ensureAgentSelected() {
@@ -44,10 +44,10 @@ function organismPage() {
       }
     },
 
-    async loadOrganism() {
+    async loadAgentDNA() {
       if (!this.selectedAgentId) {
         this.files = [];
-        this.loadError = 'Select an agent to inspect organism files.';
+        this.loadError = 'Select an agent to inspect agentdna files.';
         return;
       }
       this.loading = true;
@@ -69,7 +69,7 @@ function organismPage() {
         }
       } catch (e) {
         this.files = [];
-        this.loadError = e.message || 'Could not load organism file list.';
+        this.loadError = e.message || 'Could not load agentdna file list.';
       }
       this.loading = false;
     },

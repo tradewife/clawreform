@@ -6,9 +6,9 @@ if (typeof marked !== 'undefined') {
   marked.setOptions({
     breaks: true,
     gfm: true,
-    highlight: function(code, lang) {
+    highlight: function (code, lang) {
       if (typeof hljs !== 'undefined' && lang && hljs.getLanguage(lang)) {
-        try { return hljs.highlight(code, { language: lang }).value; } catch(e) {}
+        try { return hljs.highlight(code, { language: lang }).value; } catch (e) { }
       }
       return code;
     }
@@ -35,10 +35,10 @@ function renderMarkdown(text) {
 function copyCode(btn) {
   var code = btn.nextElementSibling;
   if (code) {
-    navigator.clipboard.writeText(code.textContent).then(function() {
+    navigator.clipboard.writeText(code.textContent).then(function () {
       btn.textContent = 'Copied!';
       btn.classList.add('copied');
-      setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+      setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
     });
   }
 }
@@ -86,7 +86,7 @@ function toolIcon(toolName) {
 }
 
 // Alpine.js global store
-document.addEventListener('alpine:init', function() {
+document.addEventListener('alpine:init', function () {
   // Restore saved API key on load
   var savedKey = localStorage.getItem('clawreform-api-key');
   if (savedKey) ClawReformAPI.setAuthToken(savedKey);
@@ -132,7 +132,7 @@ document.addEventListener('alpine:init', function() {
         var agents = await ClawReformAPI.get('/api/agents');
         this.agents = Array.isArray(agents) ? agents : [];
         this.agentCount = this.agents.length;
-      } catch(e) { /* silent */ }
+      } catch (e) { /* silent */ }
     },
 
     async checkStatus() {
@@ -143,7 +143,7 @@ document.addEventListener('alpine:init', function() {
         this.lastError = '';
         this.version = s.version || '0.2.2';
         this.agentCount = s.agent_count || 0;
-      } catch(e) {
+      } catch (e) {
         this.connected = false;
         this.lastError = e.message || 'Unknown error';
         console.warn('[ClawReform] Status check failed:', e.message);
@@ -159,7 +159,7 @@ document.addEventListener('alpine:init', function() {
         if (noKey && this.agentCount === 0) {
           this.showOnboarding = true;
         }
-      } catch(e) {
+      } catch (e) {
         // If config endpoint fails, still show onboarding if no agents
         if (this.agentCount === 0) this.showOnboarding = true;
       }
@@ -176,7 +176,7 @@ document.addEventListener('alpine:init', function() {
         this.showAuthPrompt = false;
         this.updateOpenRouterGateFromProviders((data && data.providers) || []);
         this.openRouterGateLoading = false;
-      } catch(e) {
+      } catch (e) {
         if (e.message && (e.message.indexOf('Not authorized') >= 0 || e.message.indexOf('401') >= 0 || e.message.indexOf('Missing Authorization') >= 0)) {
           this.showAuthPrompt = true;
           this.showOpenRouterGate = false;
@@ -271,8 +271,9 @@ document.addEventListener('alpine:init', function() {
 
 // Main app component
 function app() {
-  var validPages = ['overview','agents','sessions','memory-layers','collective','obsidian','organism','approvals','workflows','scheduler','channels','skills','hands','analytics','logs','settings','wizard'];
+  var validPages = ['overview', 'company', 'agents', 'sessions', 'memory-layers', 'collective', 'obsidian', 'agentdna', 'approvals', 'workflows', 'scheduler', 'channels', 'skills', 'hands', 'analytics', 'logs', 'settings', 'wizard'];
   var pageRedirects = {
+    'org': 'company',
     'chat': 'agents',
     'templates': 'agents',
     'triggers': 'workflows',
@@ -285,8 +286,8 @@ function app() {
     'obsidian-memory': 'obsidian',
     'collective-consciousness': 'collective',
     'collective-memory': 'collective',
-    'organs': 'organism',
-    'organ-system': 'organism',
+    'agentdna': 'agentdna',
+    'agentdna-system': 'agentdna',
     'audit': 'logs',
     'security': 'settings',
     'peers': 'settings',
@@ -294,7 +295,7 @@ function app() {
     'usage': 'analytics',
     'approval': 'approvals'
   };
-  var advancedPages = ['sessions','memory-layers','collective','organism','approvals','workflows','scheduler','channels','skills','hands','analytics','logs'];
+  var advancedPages = ['sessions', 'memory-layers', 'collective', 'agentdna', 'approvals', 'workflows', 'scheduler', 'channels', 'skills', 'hands', 'analytics', 'logs'];
 
   return {
     page: 'agents',
@@ -322,7 +323,7 @@ function app() {
       if (pageRedirects[page]) page = pageRedirects[page];
       if (validPages.indexOf(page) < 0) page = 'agents';
       if (!Alpine.store('app').developerMode && this.isAdvancedPage(page)) {
-        if (page === 'sessions' || page === 'memory-layers' || page === 'collective' || page === 'organism') {
+        if (page === 'sessions' || page === 'memory-layers' || page === 'collective' || page === 'agentdna') {
           return 'obsidian';
         }
         return 'overview';
@@ -334,7 +335,7 @@ function app() {
       var self = this;
 
       // Listen for OS theme changes (only matters when mode is 'system')
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
         if (self.themeMode === 'system') {
           self.theme = e.matches ? 'dark' : 'light';
           document.body.setAttribute('data-theme', self.theme);
@@ -357,7 +358,7 @@ function app() {
       document.body.setAttribute('data-theme', this.theme);
 
       // Keyboard shortcuts
-      document.addEventListener('keydown', function(e) {
+      document.addEventListener('keydown', function (e) {
         // Ctrl+K — focus agent switch / go to agents
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
           e.preventDefault();
@@ -380,17 +381,17 @@ function app() {
       });
 
       // Connection state listener
-      ClawReformAPI.onConnectionChange(function(state) {
+      ClawReformAPI.onConnectionChange(function (state) {
         Alpine.store('app').connectionState = state;
       });
 
       // Initial data load
       this.pollStatus();
       Alpine.store('app').checkOnboarding();
-      Alpine.store('app').checkAuth().then(function() {
+      Alpine.store('app').checkAuth().then(function () {
         Alpine.store('app').checkOpenRouterGate();
       });
-      setInterval(function() { self.pollStatus(); }, 5000);
+      setInterval(function () { self.pollStatus(); }, 5000);
     },
 
     navigate(p) {
@@ -421,7 +422,7 @@ function app() {
 
     startAddObsidianVault() {
       this.showObsidianVaultEditor = true;
-      setTimeout(function() {
+      setTimeout(function () {
         var el = document.getElementById('obsidian-graph-url');
         if (el) el.focus();
       }, 20);
