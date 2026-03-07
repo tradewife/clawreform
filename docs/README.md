@@ -38,6 +38,9 @@ Welcome to the clawREFORM by aegntic.ai documentation. clawREFORM by aegntic.ai 
 |-------|-------------|
 | [API Reference](api-reference.md) | All 76 REST/WS/SSE endpoints with request/response examples |
 | [Desktop App](desktop.md) | Tauri 2.0 native app -- build, features, architecture |
+| [Design Reference Shortlist](design/reference-shortlist.md) | Locked external visual references for the frontend reset |
+| [UI Baseline Pack](design/ui-baseline-pack.md) | Source-of-truth shell, material, spacing, and control rules |
+| [Frontend Reset Plan](design/frontend-reset-plan.md) | Execution sequence for replacing the legacy frontend shell |
 
 ## Release & Operations
 

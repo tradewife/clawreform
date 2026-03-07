@@ -56,14 +56,16 @@
     <nav class="sidebar" :class="{ collapsed: sidebarCollapsed, 'mobile-open': mobileMenuOpen }">
       <div class="sidebar-header">
           <div class="sidebar-header-text">
-            <div class="sidebar-logo">
+            <button class="sidebar-logo sidebar-home-btn" @click="navigate('overview')" title="Go to Home"
+              aria-label="Go to Home">
               <span class="brand-mark-frame">
                 <img src="/logo.png" alt="clawREFORM by aegntic.ai" width="28" height="28">
               </span>
               <div>
                 <h1 class="brand-wordmark"><span class="brand-wordmark-soft">claw</span><strong>REFORM</strong></h1>
                 <div class="version" x-text="'by aegntic.ai · v' + version"></div>
-            </div>
+              </div>
+            </button>
           </div>
         </div>
         <div class="sidebar-header-actions">
@@ -339,6 +341,27 @@
           <path d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
+
+      <header class="shell-border-frame" x-show="!$store.app.showAuthPrompt && !$store.app.showOpenRouterGate"
+        role="banner">
+        <div class="shell-border-rails" aria-hidden="true"></div>
+        <div class="shell-border-row">
+          <button class="shell-home-tile" @click="navigate('overview')" title="Home" aria-label="Go to Home">
+            <img src="/logo.png" alt="clawREFORM by aegntic.ai">
+            <span class="shell-home-text">
+              <strong>clawREFORM</strong>
+              <small>home</small>
+            </span>
+          </button>
+          <nav class="shell-top-nav" aria-label="Primary">
+            <button class="shell-nav-link" :class="{ active: page === 'overview' }" @click="navigate('overview')">Overview</button>
+            <button class="shell-nav-link" :class="{ active: page === 'agents' }" @click="navigate('agents')">Chat</button>
+            <button class="shell-nav-link" :class="{ active: page === 'company' }" @click="navigate('company')">Company</button>
+            <button class="shell-nav-link" :class="{ active: page === 'obsidian' }" @click="navigate('obsidian')">Memory</button>
+            <button class="shell-nav-link" :class="{ active: page === 'settings' }" @click="navigate('settings')">Settings</button>
+          </nav>
+        </div>
+      </header>
 
       <!-- Page: Overview -->
       <template x-if="page === 'overview'">
