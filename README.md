@@ -425,6 +425,9 @@ curl -fsSL https://clawreform.sh/install | sh
 # Windows PowerShell
 irm https://clawreform.sh/install.ps1 | iex
 
+# npm global (Linux/macOS/Windows)
+npm install -g clawreform
+
 # Start the daemon + open dashboard
 clawreform start
 # → http://127.0.0.1:4332

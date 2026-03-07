@@ -82,9 +82,17 @@ sudo dnf install openssl-devel sqlite-devel
 
 ### `clawreform` command not found after install
 
-**Fix**: Ensure `~/.cargo/bin` is in your PATH:
+**Fix (cargo install)**: Ensure `~/.cargo/bin` is in your PATH:
 ```bash
 export PATH="$HOME/.cargo/bin:$PATH"
+# Add to ~/.bashrc or ~/.zshrc to persist
+```
+
+**Fix (npm global install)**: Ensure npm's global bin directory is in PATH:
+```bash
+npm prefix -g
+npm bin -g
+export PATH="$(npm bin -g):$PATH"
 # Add to ~/.bashrc or ~/.zshrc to persist
 ```
 

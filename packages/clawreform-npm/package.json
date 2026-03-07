@@ -1,0 +1,40 @@
+{
+  "name": "clawreform",
+  "version": "0.3.0",
+  "description": "Cross-platform npm launcher for clawREFORM by aegntic.ai CLI",
+  "license": "MIT",
+  "author": "clawREFORM by aegntic.ai Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aegntic/clawreform"
+  },
+  "bugs": {
+    "url": "https://github.com/aegntic/clawreform/issues"
+  },
+  "homepage": "https://clawreform.com",
+  "keywords": [
+    "clawreform",
+    "agent",
+    "ai",
+    "cli",
+    "agent-os"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bin": {
+    "clawreform": "./bin/clawreform.js"
+  },
+  "scripts": {
+    "postinstall": "node ./scripts/postinstall.js"
+  },
+  "files": [
+    "README.md",
+    "bin",
+    "lib/install.js",
+    "scripts"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

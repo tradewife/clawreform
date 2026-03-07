@@ -240,6 +240,36 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+  # ── npm CLI launcher publish ──────────────────────────────────────────────
+  npm-cli:
+    name: Publish clawreform CLI launcher to npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+      - name: Set version from tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          CURRENT="$(node -p "require('./package.json').version")"
+          if [ "$CURRENT" = "$VERSION" ]; then
+            echo "Package version already $VERSION; skipping npm version bump."
+          else
+            npm version "$VERSION" --no-git-tag-version
+          fi
+        working-directory: packages/clawreform-npm
+      - name: Publish to npm
+        run: npm publish
+        working-directory: packages/clawreform-npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
   # ── Docker (linux/amd64 + linux/arm64) ────────────────────────────────────
   docker:
     name: Docker Image

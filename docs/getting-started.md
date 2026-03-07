@@ -44,7 +44,15 @@ irm https://clawreform.sh/install.ps1 | iex
 
 Downloads the latest CLI binary, verifies its SHA256 checksum, and adds it to your user PATH.
 
-### Option 4: Cargo Install (Any Platform)
+### Option 4: npm Global Install (Linux / macOS / Windows)
+
+```bash
+npm install -g clawreform
+```
+
+This installs a small npm launcher and downloads the platform-native `clawreform` binary during `postinstall`.
+
+### Option 5: Cargo Install (Any Platform)
 
 Requires Rust 1.75+:
 
@@ -60,7 +68,7 @@ cd clawreform
 cargo install --path crates/clawreform-cli
 ```
 
-### Option 5: Docker
+### Option 6: Docker
 
 ```bash
 docker pull ghcr.io/RightNow-AI/clawreform:latest
