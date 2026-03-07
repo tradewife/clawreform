@@ -1,5 +1,5 @@
 name = "meeting-assistant"
-version = "0.2.2"
+version = "0.3.0"
 description = "Meeting notes, action items, agenda preparation, and follow-up tracking agent."
 author = "aegntic.ai"
 module = "builtin:chat"

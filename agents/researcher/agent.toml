@@ -1,5 +1,5 @@
 name = "researcher"
-version = "0.2.2"
+version = "0.3.0"
 description = "Research agent. Fetches web content and synthesizes information."
 author = "aegntic.ai"
 module = "builtin:chat"
