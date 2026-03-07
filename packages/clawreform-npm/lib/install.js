@@ -52,11 +52,30 @@ async function downloadToFile(url, destination) {
   });
 
   if (!response.ok) {
-    throw new Error(`Download failed (${response.status}): ${url}`);
+    const error = new Error(`Download failed (${response.status}): ${url}`);
+    error.status = response.status;
+    throw error;
   }
 
   const arrayBuffer = await response.arrayBuffer();
   fs.writeFileSync(destination, Buffer.from(arrayBuffer));
+}
+
+async function fetchLatestReleaseTag() {
+  const url = `https://api.github.com/repos/${REPO}/releases/latest`;
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent": "clawreform-npm-installer"
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch latest release tag (${response.status})`);
+  }
+  const payload = await response.json();
+  if (!payload || typeof payload.tag_name !== "string" || !payload.tag_name.trim()) {
+    throw new Error("Latest release payload did not include tag_name.");
+  }
+  return payload.tag_name.trim();
 }
 
 function extractArchive(archivePath, destinationPath, ext) {
@@ -120,9 +139,8 @@ function installedBinaryPath() {
 
 async function installBinary(options = {}) {
   const log = typeof options.log === "function" ? options.log : console.log;
-  const version = normalizeVersion(options.version || process.env.CLAWREFORM_VERSION || require("../package.json").version);
+  const preferredVersion = normalizeVersion(options.version || process.env.CLAWREFORM_VERSION || require("../package.json").version);
   const { target, ext, binName } = resolveTarget();
-  const downloadUrl = assetUrl(version, target, ext);
 
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "clawreform-npm-"));
   const archivePath = path.join(tmpRoot, `clawreform.${ext}`);
@@ -130,8 +148,44 @@ async function installBinary(options = {}) {
   fs.mkdirSync(extractPath, { recursive: true });
 
   try {
-    log(`clawreform npm: downloading ${version} (${target})`);
-    await downloadToFile(downloadUrl, archivePath);
+    let downloadedVersion = null;
+    const versionsToTry = [preferredVersion];
+    try {
+      const latestTag = normalizeVersion(await fetchLatestReleaseTag());
+      if (!versionsToTry.includes(latestTag)) {
+        versionsToTry.push(latestTag);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log(`clawreform npm: warning: unable to resolve latest release tag (${message})`);
+    }
+
+    let lastError = null;
+    for (const version of versionsToTry) {
+      const downloadUrl = assetUrl(version, target, ext);
+      try {
+        log(`clawreform npm: downloading ${version} (${target})`);
+        await downloadToFile(downloadUrl, archivePath);
+        downloadedVersion = version;
+        break;
+      } catch (error) {
+        lastError = error;
+        const status = error && typeof error === "object" ? error.status : null;
+        if (status === 404) {
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    if (!downloadedVersion) {
+      throw lastError || new Error("Could not download a matching clawreform release asset.");
+    }
+
+    if (downloadedVersion !== preferredVersion) {
+      log(`clawreform npm: release ${preferredVersion} was unavailable, using ${downloadedVersion} instead`);
+    }
+
     extractArchive(archivePath, extractPath, ext);
 
     const sourceBinary = findFileRecursively(extractPath, binName);
