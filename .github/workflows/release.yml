@@ -222,8 +222,17 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - name: Set version from tag
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          npm version "$VERSION" --no-git-tag-version
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          CURRENT="$(node -p "require('./package.json').version")"
+          if [ "$CURRENT" = "$VERSION" ]; then
+            echo "Package version already $VERSION; skipping npm version bump."
+          else
+            npm version "$VERSION" --no-git-tag-version
+          fi
         working-directory: sdk/javascript
       - name: Publish to npm
         run: npm publish
