@@ -393,6 +393,10 @@ tr:hover td { background: var(--surface2); }
   backdrop-filter: blur(10px);
 }
 
+.auth-gate-priority {
+  z-index: 10002;
+}
+
 .auth-panel {
   width: min(520px, 92vw);
   padding: 24px;
@@ -402,6 +406,10 @@ tr:hover td { background: var(--surface2); }
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03), var(--shadow-contact), var(--shadow-xl), var(--shadow-glow-amber);
   position: relative;
   overflow: hidden;
+}
+
+.auth-panel-compact {
+  width: min(440px, 92vw);
 }
 
 .auth-panel::before {
@@ -470,6 +478,89 @@ tr:hover td { background: var(--surface2); }
 
 .auth-panel-actions .btn {
   flex: 1;
+}
+
+.auth-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: -2px 0 16px;
+  min-height: 34px;
+}
+
+.auth-shell-rails {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+}
+
+.auth-shell-rails::before,
+.auth-shell-rails::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.04) 44%, rgba(0, 0, 0, 0.3)),
+    var(--metal-sheen);
+  border: 1px solid color-mix(in srgb, var(--border) 68%, var(--accent) 32%);
+  box-shadow: var(--shadow-contact), var(--shadow-drop);
+}
+
+.auth-shell-rails::before {
+  top: 0;
+  height: 8px;
+}
+
+.auth-shell-rails::after {
+  top: 6px;
+  height: 6px;
+  opacity: 0.9;
+}
+
+.auth-shell-home {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--border) 62%, var(--accent) 38%);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.05) 38%, rgba(0, 0, 0, 0.24)),
+    var(--surface-metal);
+  color: var(--text-stamped);
+  text-shadow: 0 -1px 0 var(--text-stamped-shadow), 0 1px 0 var(--text-stamped-lip);
+  box-shadow: var(--shadow-contact), var(--shadow-metal), var(--shadow-glow-amber);
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.auth-shell-home img {
+  width: 18px;
+  height: 18px;
+  filter: drop-shadow(0 6px 10px var(--logo-shadow));
+}
+
+.auth-shell-home-text {
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.auth-input-gap {
+  margin-bottom: 12px;
+}
+
+.auth-input-gap-sm {
+  margin-bottom: 8px;
+}
+
+.auth-loading-state {
+  margin: 4px 0 8px;
 }
 
 .auth-error {
@@ -1491,9 +1582,62 @@ mark.search-highlight {
 .text-dim { color: var(--text-dim); }
 .text-sm { font-size: 11px; }
 .text-xs { font-size: 10px; }
+.text-lg { font-size: 18px; }
+.text-success { color: var(--success); }
 .font-bold { font-weight: 600; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hidden { display: none !important; }
+.w-full { width: 100%; }
+
+.card-accent-left {
+  border-left: 3px solid var(--accent);
+}
+
+.card-accent-success {
+  border-left-color: var(--success);
+}
+
+.heading-sm {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.copy-relaxed {
+  line-height: 1.6;
+}
+
+.copy-relaxed-tight {
+  line-height: 1.45;
+}
+
+.copy-relaxed-lg {
+  line-height: 1.8;
+}
+
+.code-chip {
+  color: var(--accent-light);
+  background: var(--bg);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.panel-scroll-md {
+  max-height: 45vh;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--surface2);
+}
+
+.embed-frame {
+  width: 100%;
+  height: 70vh;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
 
 /* Agent card actions */
 .agent-card-actions {
@@ -2667,6 +2811,147 @@ mark.search-highlight {
   background: var(--surface-panel);
 }
 
+.wizard-template-icon-accent {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 700;
+}
+
+.wizard-category-offset {
+  margin-left: 6px;
+}
+
+.wizard-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+
+.wizard-copy {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.wizard-section {
+  margin-bottom: 16px;
+}
+
+.wizard-section-label {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.wizard-grid-providers {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.wizard-grid-templates {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  margin-bottom: 20px;
+}
+
+.wizard-provider-card-pad {
+  padding: 12px;
+}
+
+.wizard-provider-name {
+  font-size: 13px;
+}
+
+.wizard-ready-badge {
+  font-size: 8px;
+}
+
+.wizard-config-card {
+  margin-top: 16px;
+}
+
+.wizard-help-link {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.wizard-help-copy {
+  color: var(--accent-light);
+}
+
+.wizard-spinner-sm {
+  width: 10px;
+  height: 10px;
+  border-width: 2px;
+}
+
+.wizard-badge-compact {
+  padding: 6px 12px;
+}
+
+.wizard-form-narrow {
+  max-width: 320px;
+}
+
+.wizard-meta {
+  color: var(--text-muted);
+}
+
+.wizard-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.wizard-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.wizard-input-grow {
+  flex: 1;
+}
+
+.wizard-tryit-min {
+  min-height: 60px;
+}
+
+.wizard-tryit-thinking {
+  opacity: 0.5;
+}
+
+.wizard-next-steps {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+
+.wizard-next-steps-row {
+  padding: 4px 0;
+}
+
+.wizard-success-copy {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.wizard-card-left {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.wizard-center-actions {
+  justify-content: center;
+}
+
 /* Responsive wizard */
 @media (max-width: 600px) {
   .wizard-progress-label { display: none; }
@@ -2674,6 +2959,9 @@ mark.search-highlight {
   .wizard-progress-circle { width: 28px; height: 28px; font-size: 11px; }
   .wizard-progress-line { top: 34px; }
   .wizard-card { padding: 16px; }
+  .wizard-input-row {
+    flex-direction: column;
+  }
 }
 
 /* ── Page Transition Animation ── */

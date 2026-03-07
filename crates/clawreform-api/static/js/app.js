@@ -298,7 +298,7 @@ function app() {
   var advancedPages = ['sessions', 'memory-layers', 'collective', 'agentdna', 'approvals', 'workflows', 'scheduler', 'channels', 'skills', 'hands', 'analytics', 'logs'];
 
   return {
-    page: 'agents',
+    page: 'overview',
     obsidianGraphUrl: localStorage.getItem('clawreform-obsidian-graph-url') || '',
     showObsidianVaultEditor: !!(localStorage.getItem('clawreform-obsidian-graph-url') || '').trim(),
     themeMode: localStorage.getItem('clawreform-theme-mode') || 'dark',
@@ -307,7 +307,8 @@ function app() {
       if (mode === 'system') return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       return mode;
     })(),
-    sidebarCollapsed: localStorage.getItem('clawreform-sidebar') === 'collapsed',
+    // Top-nav-first: collapse sidebar unless explicitly expanded by user
+    sidebarCollapsed: localStorage.getItem('clawreform-sidebar') !== 'expanded',
     mobileMenuOpen: false,
     connected: false,
     wsConnected: false,
@@ -319,9 +320,9 @@ function app() {
       return advancedPages.indexOf(pageName) >= 0;
     },
     normalizePage(rawPage) {
-      var page = rawPage || 'agents';
+      var page = rawPage || 'overview';
       if (pageRedirects[page]) page = pageRedirects[page];
-      if (validPages.indexOf(page) < 0) page = 'agents';
+      if (validPages.indexOf(page) < 0) page = 'overview';
       if (!Alpine.store('app').developerMode && this.isAdvancedPage(page)) {
         if (page === 'sessions' || page === 'memory-layers' || page === 'collective' || page === 'agentdna') {
           return 'obsidian';
@@ -344,7 +345,7 @@ function app() {
 
       // Hash routing
       function handleHash() {
-        var current = window.location.hash.replace('#', '') || 'agents';
+        var current = window.location.hash.replace('#', '') || 'overview';
         var normalized = self.normalizePage(current);
         if (normalized !== current) {
           window.location.hash = normalized;
@@ -363,6 +364,11 @@ function app() {
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
           e.preventDefault();
           self.navigate('agents');
+        }
+        // Ctrl+H — go to home/overview
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'h' || e.key === 'H')) {
+          e.preventDefault();
+          self.navigate('overview');
         }
         // Ctrl+N — new agent
         if ((e.ctrlKey || e.metaKey) && e.key === 'n' && !e.shiftKey) {

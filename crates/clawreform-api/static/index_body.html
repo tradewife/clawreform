@@ -1,20 +1,26 @@
 <body x-data="app" :data-theme="theme">
 
   <!-- API Key Auth Prompt -->
-  <div x-show="$store.app.showAuthPrompt" class="auth-gate" style="z-index:9999" x-data="{ apiKeyInput: '', emailCapture: '' }">
-    <div class="auth-panel" style="max-width:400px">
+  <div x-show="$store.app.showAuthPrompt" class="auth-gate auth-gate-priority" x-data="{ apiKeyInput: '', emailCapture: '' }">
+    <div class="auth-panel auth-panel-compact">
+      <div class="auth-shell">
+        <div class="auth-shell-rails" aria-hidden="true"></div>
+        <button class="auth-shell-home" @click="navigate('overview')" aria-label="Go to Home">
+          <img src="/logo.png" alt="clawREFORM by aegntic.ai">
+          <span class="auth-shell-home-text">Home</span>
+        </button>
+      </div>
       <h3 class="auth-panel-title">API Key Required</h3>
       <p class="auth-panel-copy">This instance requires an API key. Enter the key from your <code>config.toml</code>.
       </p>
       <form @submit.prevent="$store.app.submitApiKey(apiKeyInput)">
-        <input type="password" x-model="apiKeyInput" placeholder="Enter API key..." class="input" style="margin-bottom:12px">
+        <input type="password" x-model="apiKeyInput" placeholder="Enter API key..." class="input auth-input-gap">
         <button type="submit" class="btn btn-primary btn-block">Unlock Dashboard</button>
       </form>
       <div class="auth-panel-divider">
         <p class="auth-panel-meta">Don't have a key? Get early access:</p>
         <form @submit.prevent="emailCapture && (alert('Thanks! We\'ll notify you.'), emailCapture='')">
-          <input type="email" x-model="emailCapture" placeholder="Enter your email..." class="input"
-            style="margin-bottom:8px">
+          <input type="email" x-model="emailCapture" placeholder="Enter your email..." class="input auth-input-gap-sm">
           <button type="submit" class="btn btn-ghost btn-block">Join Waitlist</button>
         </form>
       </div>
@@ -24,6 +30,13 @@
   <!-- OpenRouter Setup Gate -->
   <div x-show="!$store.app.showAuthPrompt && $store.app.showOpenRouterGate" class="auth-gate">
     <div class="auth-panel">
+      <div class="auth-shell">
+        <div class="auth-shell-rails" aria-hidden="true"></div>
+        <button class="auth-shell-home" @click="navigate('overview')" aria-label="Go to Home">
+          <img src="/logo.png" alt="clawREFORM by aegntic.ai">
+          <span class="auth-shell-home-text">Home</span>
+        </button>
+      </div>
       <h3 class="auth-panel-title">OpenRouter Key Required</h3>
       <p class="auth-panel-copy">
         clawREFORM's lightweight in-house assistant path uses OpenRouter as the default provider.
@@ -33,12 +46,11 @@
         Get a key:
         <a :href="$store.app.openRouterHelpUrl" target="_blank" rel="noopener noreferrer" class="auth-panel-link">openrouter.ai/keys</a>
       </div>
-      <div x-show="$store.app.openRouterGateLoading" class="loading-state" style="margin:4px 0 8px">
+      <div x-show="$store.app.openRouterGateLoading" class="loading-state auth-loading-state">
         <div class="spinner"></div><span>Checking OpenRouter status...</span>
       </div>
       <form x-show="!$store.app.openRouterGateLoading" @submit.prevent="$store.app.saveOpenRouterKey()">
-        <input type="password" x-model="$store.app.openRouterKeyInput" placeholder="Enter OpenRouter API key..." class="input"
-          style="margin-bottom:10px">
+        <input type="password" x-model="$store.app.openRouterKeyInput" placeholder="Enter OpenRouter API key..." class="input auth-input-gap-sm">
         <div x-show="$store.app.openRouterError" class="auth-error" x-text="$store.app.openRouterError"></div>
         <div class="auth-panel-actions">
           <button type="submit" class="btn btn-primary" :disabled="$store.app.openRouterSaving">
@@ -334,8 +346,7 @@
     <!-- Main Content -->
     <main class="main-content">
       <!-- Mobile menu button -->
-      <button class="mobile-menu-btn btn btn-ghost" @click="mobileMenuOpen = !mobileMenuOpen"
-        style="position:fixed;top:8px;left:8px;z-index:98;padding:6px 10px">
+      <button class="mobile-menu-btn btn btn-ghost mobile-menu-fab" @click="mobileMenuOpen = !mobileMenuOpen">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 6h16M4 12h16M4 18h16" />
@@ -354,11 +365,20 @@
             </span>
           </button>
           <nav class="shell-top-nav" aria-label="Primary">
-            <button class="shell-nav-link" :class="{ active: page === 'overview' }" @click="navigate('overview')">Overview</button>
+            <button class="shell-nav-link" :class="{ active: page === 'overview' }"
+              @click="navigate('overview')">Overview</button>
             <button class="shell-nav-link" :class="{ active: page === 'agents' }" @click="navigate('agents')">Chat</button>
-            <button class="shell-nav-link" :class="{ active: page === 'company' }" @click="navigate('company')">Company</button>
-            <button class="shell-nav-link" :class="{ active: page === 'obsidian' }" @click="navigate('obsidian')">Memory</button>
-            <button class="shell-nav-link" :class="{ active: page === 'settings' }" @click="navigate('settings')">Settings</button>
+            <button class="shell-nav-link" :class="{ active: page === 'company' }"
+              @click="navigate('company')">Company</button>
+            <button class="shell-nav-link" :class="{ active: page === 'obsidian' }"
+              @click="navigate('obsidian')">Memory</button>
+            <button class="shell-nav-link" :class="{ active: page === 'wizard' }" @click="navigate('wizard')">Setup</button>
+            <button class="shell-nav-link" :class="{ active: page === 'settings' }"
+              @click="navigate('settings')">Settings</button>
+            <button class="shell-nav-link" x-show="$store.app.developerMode"
+              :class="{ active: page === 'workflows' }" @click="navigate('workflows')">Workflows</button>
+            <button class="shell-nav-link" x-show="$store.app.developerMode"
+              :class="{ active: page === 'channels' }" @click="navigate('channels')">Channels</button>
           </nav>
         </div>
       </header>
@@ -5525,8 +5545,7 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
 
               <div class="card">
                 <h4 class="mb-2">Raw Auto Snapshot</h4>
-                <div class="markdown-body"
-                  style="max-height:45vh;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--surface2)"
+                <div class="markdown-body panel-scroll-md"
                   x-html="renderMarkdown(autoSection || '_No auto snapshot found in COLLECTIVE.md_')"></div>
               </div>
             </div>
@@ -5541,17 +5560,17 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
             <h2>Memory Graph</h2>
           </div>
           <div class="page-body">
-            <div class="card mb-4" style="border-left:3px solid var(--accent)">
-              <div class="font-bold" style="font-size:13px;margin-bottom:4px">One live memory map</div>
-              <div class="text-sm text-dim" style="line-height:1.6">
+            <div class="card mb-4 card-accent-left">
+              <div class="heading-sm">One live memory map</div>
+              <div class="text-sm text-dim copy-relaxed">
                 This is the default memory view. Connect your Obsidian graph URL to see all memory context in one place.
               </div>
             </div>
 
             <template x-if="!hasObsidianGraphLinked && !showObsidianVaultEditor">
               <div class="card mb-4">
-                <div class="font-bold" style="font-size:13px;margin-bottom:4px">No active Obsidian vault linked</div>
-                <div class="text-sm text-dim" style="line-height:1.6;margin-bottom:12px">
+                <div class="heading-sm">No active Obsidian vault linked</div>
+                <div class="text-sm text-dim copy-relaxed mb-2">
                   Pick one path. Create Vault starts a fresh vault flow in Obsidian with a default clawREFORM link. Add
                   Vault lets you paste an existing vault/graph URL.
                 </div>
@@ -5570,10 +5589,8 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                 <input id="obsidian-graph-url" class="form-input" x-model="obsidianGraphUrl"
                   placeholder="obsidian://graph?vault=YourVault or https://graph-view.local">
                 <div class="text-xs text-dim mt-2">
-                  Use an <code
-                    style="color:var(--accent-light);background:var(--bg);padding:1px 4px;border-radius:2px">obsidian://</code>
-                  link to open the app, or an <code
-                    style="color:var(--accent-light);background:var(--bg);padding:1px 4px;border-radius:2px">http(s)://</code>
+                  Use an <code class="code-chip">obsidian://</code>
+                  link to open the app, or an <code class="code-chip">http(s)://</code>
                   URL for in-dashboard embed.
                 </div>
               </div>
@@ -5589,9 +5606,8 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
 
             <template x-if="obsidianEmbedUrl">
               <div class="card">
-                <div class="font-bold mb-2" style="font-size:12px">Embedded graph</div>
-                <iframe :src="obsidianEmbedUrl" title="Obsidian Graph"
-                  style="width:100%;height:70vh;border:1px solid var(--border);border-radius:10px;background:var(--bg)"></iframe>
+                <div class="font-bold mb-2 text-sm">Embedded graph</div>
+                <iframe :src="obsidianEmbedUrl" title="Obsidian Graph" class="embed-frame"></iframe>
               </div>
             </template>
 
@@ -5912,30 +5928,29 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
               <!-- Step 2: Provider Setup -->
               <div class="wizard-step" x-show="step === 2">
                 <div class="wizard-card">
-                  <h3 style="font-size:16px;font-weight:700;margin-bottom:4px">Connect an LLM Provider</h3>
-                  <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.6">
+                  <h3 class="wizard-title">Connect an LLM Provider</h3>
+                  <p class="wizard-copy">
                     clawREFORM by aegntic.ai needs at least one LLM provider to power your agents. Select a provider and
                     enter your API key.
                   </p>
 
-                  <div class="info-card" x-show="hasConfiguredProvider" style="border-left-color:var(--success)">
-                    <h4 style="color:var(--success)">Provider Already Configured</h4>
+                  <div class="info-card card-accent-success" x-show="hasConfiguredProvider">
+                    <h4 class="text-success">Provider Already Configured</h4>
                     <p>You already have at least one provider set up. You can continue to the next step or configure
                       additional providers.</p>
                   </div>
 
-                  <div style="margin-bottom:16px">
-                    <div class="text-xs font-bold text-dim mb-2" style="text-transform:uppercase;letter-spacing:0.5px">
+                  <div class="wizard-section">
+                    <div class="text-xs font-bold text-dim mb-2 wizard-section-label">
                       Popular Providers</div>
-                    <div class="card-grid" style="grid-template-columns:repeat(auto-fill, minmax(200px, 1fr))">
+                    <div class="card-grid wizard-grid-providers">
                       <template x-for="p in popularProviders" :key="p.id">
                         <div class="card wizard-provider-card"
                           :class="{ 'wizard-provider-selected': selectedProvider === p.id, 'provider-card configured': providerIsConfigured(p) }"
-                          @click="selectProvider(p.id)" style="cursor:pointer;padding:12px">
+                          @click="selectProvider(p.id)" class="wizard-provider-card-pad">
                           <div class="flex justify-between items-center">
-                            <span class="font-bold" style="font-size:13px" x-text="p.display_name"></span>
-                            <span class="badge badge-success" x-show="providerIsConfigured(p)"
-                              style="font-size:8px">READY</span>
+                            <span class="font-bold wizard-provider-name" x-text="p.display_name"></span>
+                            <span class="badge badge-success wizard-ready-badge" x-show="providerIsConfigured(p)">READY</span>
                           </div>
                           <div class="text-xs text-dim mt-1" x-text="(p.model_count || 0) + ' models'"></div>
                         </div>
@@ -5943,18 +5958,17 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                     </div>
                   </div>
 
-                  <div style="margin-bottom:16px" x-show="otherProviders.length">
-                    <div class="text-xs font-bold text-dim mb-2" style="text-transform:uppercase;letter-spacing:0.5px">
+                  <div class="wizard-section" x-show="otherProviders.length">
+                    <div class="text-xs font-bold text-dim mb-2 wizard-section-label">
                       Other Providers</div>
-                    <div class="card-grid" style="grid-template-columns:repeat(auto-fill, minmax(200px, 1fr))">
+                    <div class="card-grid wizard-grid-providers">
                       <template x-for="p in otherProviders" :key="p.id">
                         <div class="card wizard-provider-card"
                           :class="{ 'wizard-provider-selected': selectedProvider === p.id, 'provider-card configured': providerIsConfigured(p) }"
-                          @click="selectProvider(p.id)" style="cursor:pointer;padding:12px">
+                          @click="selectProvider(p.id)" class="wizard-provider-card-pad">
                           <div class="flex justify-between items-center">
-                            <span class="font-bold" style="font-size:13px" x-text="p.display_name"></span>
-                            <span class="badge badge-success" x-show="providerIsConfigured(p)"
-                              style="font-size:8px">READY</span>
+                            <span class="font-bold wizard-provider-name" x-text="p.display_name"></span>
+                            <span class="badge badge-success wizard-ready-badge" x-show="providerIsConfigured(p)">READY</span>
                           </div>
                           <div class="text-xs text-dim mt-1" x-text="(p.model_count || 0) + ' models'"></div>
                         </div>
@@ -5963,17 +5977,14 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                   </div>
 
                   <template x-if="selectedProviderObj && !providerIsConfigured(selectedProviderObj)">
-                    <div class="card" style="border-left:3px solid var(--accent);margin-top:16px">
+                    <div class="card card-accent-left wizard-config-card">
                       <div class="card-header" x-text="'Configure ' + selectedProviderObj.display_name"></div>
                       <div class="text-xs text-dim mb-2" x-show="selectedProviderObj.api_key_env">
-                        Environment variable: <code
-                          style="color:var(--accent-light);background:var(--bg);padding:1px 4px;border-radius:2px"
-                          x-text="selectedProviderObj.api_key_env"></code>
+                        Environment variable: <code class="code-chip" x-text="selectedProviderObj.api_key_env"></code>
                       </div>
-                      <div class="text-xs mb-3" x-show="providerHelp(selectedProvider)"
-                        style="color:var(--accent-light)">
+                      <div class="text-xs mb-3 wizard-help-copy" x-show="providerHelp(selectedProvider)">
                         <a :href="providerHelp(selectedProvider) ? providerHelp(selectedProvider).url : '#'"
-                          target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline"
+                          target="_blank" rel="noopener" class="wizard-help-link"
                           x-text="providerHelp(selectedProvider) ? providerHelp(selectedProvider).text : ''"></a>
                       </div>
                       <div class="form-group">
@@ -5985,29 +5996,26 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                           <button class="btn btn-primary btn-sm" @click="saveKey()"
                             :disabled="savingKey || !apiKeyInput.trim()">
                             <span x-show="!savingKey">Save &amp; Test</span>
-                            <span x-show="savingKey" class="spinner"
-                              style="width:10px;height:10px;border-width:2px"></span>
+                            <span x-show="savingKey" class="spinner wizard-spinner-sm"></span>
                           </button>
                         </div>
                       </div>
                       <div x-show="testResult" class="mt-2">
-                        <div x-show="testResult && testResult.status === 'ok'" class="badge badge-success"
-                          style="padding:6px 12px">Connected successfully<span
+                        <div x-show="testResult && testResult.status === 'ok'" class="badge badge-success wizard-badge-compact">Connected successfully<span
                             x-show="testResult && testResult.latency_ms"
                             x-text="' (' + (testResult ? testResult.latency_ms : '') + 'ms)'"></span></div>
-                        <div x-show="testResult && testResult.status !== 'ok'" class="badge badge-error"
-                          style="padding:6px 12px"><span
+                        <div x-show="testResult && testResult.status !== 'ok'" class="badge badge-error wizard-badge-compact"><span
                             x-text="testResult ? (testResult.error || 'Connection failed') : ''"></span></div>
                       </div>
                     </div>
                   </template>
 
                   <template x-if="selectedProviderObj && providerIsConfigured(selectedProviderObj)">
-                    <div class="card" style="border-left:3px solid var(--success);margin-top:16px">
+                    <div class="card card-accent-left card-accent-success wizard-config-card">
                       <div class="flex items-center gap-2">
-                        <span style="color:var(--success);font-size:18px">&#10003;</span>
+                        <span class="text-success text-lg">&#10003;</span>
                         <div>
-                          <div class="font-bold" style="font-size:13px"
+                          <div class="font-bold wizard-provider-name"
                             x-text="selectedProviderObj.display_name + ' is configured and ready'"></div>
                           <div class="text-xs text-dim">You can test the connection or continue to the next step.</div>
                         </div>
@@ -6015,16 +6023,13 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                       <div class="flex gap-2 mt-2">
                         <button class="btn btn-ghost btn-sm" @click="testKey()" :disabled="testingProvider">
                           <span x-show="!testingProvider">Test Connection</span>
-                          <span x-show="testingProvider" class="spinner"
-                            style="width:10px;height:10px;border-width:2px"></span>
+                          <span x-show="testingProvider" class="spinner wizard-spinner-sm"></span>
                         </button>
                       </div>
                       <div x-show="testResult" class="mt-2">
-                        <div x-show="testResult && testResult.status === 'ok'" class="badge badge-success"
-                          style="padding:6px 12px">Connected<span x-show="testResult && testResult.latency_ms"
+                        <div x-show="testResult && testResult.status === 'ok'" class="badge badge-success wizard-badge-compact">Connected<span x-show="testResult && testResult.latency_ms"
                             x-text="' (' + (testResult ? testResult.latency_ms : '') + 'ms)'"></span></div>
-                        <div x-show="testResult && testResult.status !== 'ok'" class="badge badge-error"
-                          style="padding:6px 12px"><span
+                        <div x-show="testResult && testResult.status !== 'ok'" class="badge badge-error wizard-badge-compact"><span
                             x-text="testResult ? (testResult.error || 'Connection failed') : ''"></span></div>
                       </div>
                     </div>
@@ -6040,8 +6045,8 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
               <!-- Step 3: Create First Agent -->
               <div class="wizard-step" x-show="step === 3">
                 <div class="wizard-card">
-                  <h3 style="font-size:16px;font-weight:700;margin-bottom:4px">Create Your First Agent</h3>
-                  <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.6">Pick a template to
+                  <h3 class="wizard-title">Create Your First Agent</h3>
+                  <p class="wizard-copy">Pick a template to
                     get started quickly. You can customize the agent later or create more from the Agents page.</p>
 
                   <!-- Category filter pills -->
@@ -6052,24 +6057,21 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                     </template>
                   </div>
 
-                  <div class="card-grid"
-                    style="grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));margin-bottom:20px">
+                  <div class="card-grid wizard-grid-templates">
                     <template x-for="(tpl, i) in filteredTemplates" :key="tpl.id">
                       <div class="card wizard-template-card"
                         :class="{ 'wizard-template-selected': selectedTemplate === templates.indexOf(tpl) }"
-                        @click="selectTemplate(templates.indexOf(tpl))" style="cursor:pointer">
+                        @click="selectTemplate(templates.indexOf(tpl))">
                         <div class="flex items-center gap-2 mb-2">
-                          <span class="channel-icon"
-                            style="background:var(--accent);color: var(--text-on-accent);font-weight:700"
-                            x-text="tpl.icon"></span>
+                          <span class="channel-icon wizard-template-icon-accent" x-text="tpl.icon"></span>
                           <div>
-                            <span class="font-bold" style="font-size:13px" x-text="tpl.name"></span>
-                            <span class="category-badge" style="margin-left:6px" x-text="tpl.category"></span>
+                            <span class="font-bold wizard-provider-name" x-text="tpl.name"></span>
+                            <span class="category-badge wizard-category-offset" x-text="tpl.category"></span>
                           </div>
                         </div>
-                        <div class="text-xs text-dim" style="line-height:1.6" x-text="tpl.description"></div>
+                        <div class="text-xs text-dim copy-relaxed" x-text="tpl.description"></div>
                         <div class="flex justify-between items-center mt-2">
-                          <span class="text-xs" style="color:var(--text-muted)"
+                          <span class="text-xs wizard-meta"
                             x-text="tpl.provider + ' / ' + tpl.model"></span>
                           <span class="badge badge-muted" x-text="tpl.profile"></span>
                         </div>
@@ -6079,11 +6081,11 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                     </template>
                   </div>
 
-                  <div class="card" style="border-left:3px solid var(--accent)">
-                    <div class="form-group" style="margin-bottom:8px">
+                  <div class="card card-accent-left">
+                    <div class="form-group mb-2">
                       <label>Agent Name</label>
-                      <input class="form-input" type="text" x-model="agentName" placeholder="my-assistant"
-                        style="max-width:320px" @keydown.enter="createAgent()">
+                      <input class="form-input wizard-form-narrow" type="text" x-model="agentName"
+                        placeholder="my-assistant" @keydown.enter="createAgent()">
                     </div>
                     <div class="text-xs text-dim"
                       x-text="'Will use ' + templates[selectedTemplate].provider + ' / ' + templates[selectedTemplate].model + ' with ' + profileInfo(templates[selectedTemplate].profile).label + ' profile'">
@@ -6092,12 +6094,11 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                       <button class="btn btn-primary" @click="createAgent()"
                         :disabled="creatingAgent || !agentName.trim()">
                         <span x-show="!creatingAgent">Create Agent</span>
-                        <span x-show="creatingAgent" class="spinner"
-                          style="width:10px;height:10px;border-width:2px"></span>
+                        <span x-show="creatingAgent" class="spinner wizard-spinner-sm"></span>
                       </button>
                     </div>
                     <div x-show="createdAgent" class="mt-2">
-                      <div class="badge badge-success" style="padding:6px 12px">Agent "<span
+                      <div class="badge badge-success wizard-badge-compact">Agent "<span
                           x-text="createdAgent ? createdAgent.name : ''"></span>" created successfully</div>
                     </div>
                   </div>
@@ -6112,13 +6113,13 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
               <!-- Step 4: Try It (mini chat) -->
               <div class="wizard-step" x-show="step === 4">
                 <div class="wizard-card">
-                  <h3 style="font-size:16px;font-weight:700;margin-bottom:4px">Try Your Agent</h3>
-                  <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.6">
+                  <h3 class="wizard-title">Try Your Agent</h3>
+                  <p class="wizard-copy">
                     Send a quick message to test your new agent. Try one of the suggestions below or type your own.
                   </p>
 
                   <!-- Suggested message chips -->
-                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+                  <div class="wizard-chip-row">
                     <template x-for="(s, si) in currentSuggestions" :key="si">
                       <button class="suggest-chip" @click="sendTryItMessage(s)" :disabled="tryItSending"
                         x-text="s"></button>
@@ -6126,18 +6127,18 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                   </div>
 
                   <!-- Mini chat messages -->
-                  <div class="tryit-messages" style="min-height:60px">
+                  <div class="tryit-messages wizard-tryit-min">
                     <template x-for="(msg, mi) in tryItMessages" :key="mi">
                       <div class="tryit-msg" :class="msg.role === 'user' ? 'tryit-msg-user' : 'tryit-msg-agent'"
                         x-text="msg.text"></div>
                     </template>
-                    <div x-show="tryItSending" class="tryit-msg tryit-msg-agent" style="opacity:0.5">Thinking...</div>
+                    <div x-show="tryItSending" class="tryit-msg tryit-msg-agent wizard-tryit-thinking">Thinking...</div>
                   </div>
 
                   <!-- Input -->
-                  <div style="display:flex;gap:8px;margin-top:12px">
+                  <div class="wizard-input-row">
                     <input class="form-input" type="text" x-model="tryItInput" placeholder="Type a message..."
-                      @keydown.enter="sendTryItMessage(tryItInput)" :disabled="tryItSending" style="flex:1">
+                      @keydown.enter="sendTryItMessage(tryItInput)" :disabled="tryItSending" class="wizard-input-grow">
                     <button class="btn btn-primary btn-sm" @click="sendTryItMessage(tryItInput)"
                       :disabled="tryItSending || !tryItInput.trim()">Send</button>
                   </div>
@@ -6151,29 +6152,27 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
               <!-- Step 5: Channel Setup (Optional) -->
               <div class="wizard-step" x-show="step === 5">
                 <div class="wizard-card">
-                  <h3 style="font-size:16px;font-weight:700;margin-bottom:4px">Connect a Channel <span
+                  <h3 class="wizard-title">Connect a Channel <span
                       class="badge badge-muted">Optional</span></h3>
-                  <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.6">Channels let your
+                  <p class="wizard-copy">Channels let your
                     agent communicate via messaging platforms. This is optional &mdash; you can always use the built-in
                     web chat.</p>
 
-                  <div class="card-grid"
-                    style="grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));margin-bottom:16px">
+                  <div class="card-grid wizard-grid-templates wizard-section">
                     <template x-for="ch in channelOptions" :key="ch.name">
                       <div class="card wizard-template-card"
-                        :class="{ 'wizard-template-selected': channelType === ch.name }" @click="selectChannel(ch.name)"
-                        style="cursor:pointer">
+                        :class="{ 'wizard-template-selected': channelType === ch.name }" @click="selectChannel(ch.name)">
                         <div class="flex items-center gap-2 mb-2">
                           <span class="channel-icon" x-text="ch.icon"></span>
-                          <span class="font-bold" style="font-size:13px" x-text="ch.display_name"></span>
+                          <span class="font-bold wizard-provider-name" x-text="ch.display_name"></span>
                         </div>
-                        <div class="text-xs text-dim" style="line-height:1.6" x-text="ch.description"></div>
+                        <div class="text-xs text-dim copy-relaxed" x-text="ch.description"></div>
                       </div>
                     </template>
                   </div>
 
                   <template x-if="selectedChannelObj">
-                    <div class="card" style="border-left:3px solid var(--accent)">
+                    <div class="card card-accent-left">
                       <div class="card-header" x-text="'Configure ' + selectedChannelObj.display_name"></div>
                       <div class="text-xs text-dim mb-2" x-text="selectedChannelObj.help"></div>
                       <div class="form-group">
@@ -6184,15 +6183,14 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                           <button class="btn btn-primary btn-sm" @click="configureChannel()"
                             :disabled="configuringChannel || !channelToken.trim()">
                             <span x-show="!configuringChannel">Save</span>
-                            <span x-show="configuringChannel" class="spinner"
-                              style="width:10px;height:10px;border-width:2px"></span>
+                            <span x-show="configuringChannel" class="spinner wizard-spinner-sm"></span>
                           </button>
                         </div>
                       </div>
                       <div class="text-xs text-dim"
                         x-text="'Or set ' + selectedChannelObj.token_env + ' in your environment'"></div>
                       <div x-show="channelConfigured" class="mt-2">
-                        <div class="badge badge-success" style="padding:6px 12px"><span
+                        <div class="badge badge-success wizard-badge-compact"><span
                             x-text="selectedChannelObj ? selectedChannelObj.display_name : ''"></span> configured and
                           activated.</div>
                       </div>
@@ -6218,7 +6216,7 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                 <div class="wizard-card wizard-card-hero">
                   <div class="wizard-complete-mark">&#10003;</div>
                   <h3 class="wizard-welcome-title">You're All Set!</h3>
-                  <p style="font-size:13px;color:var(--text-dim);line-height:1.8;margin-bottom:24px">clawREFORM by
+                  <p class="wizard-success-copy">clawREFORM by
                     aegntic.ai is configured and ready to go. Here is a summary of what was set up:</p>
 
                   <div class="card wizard-checklist-card">
@@ -6251,23 +6249,23 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
                     </div>
                   </div>
 
-                  <div class="card" style="text-align:left;margin-bottom:20px">
+                  <div class="card wizard-card-left">
                     <div class="card-header">Next Steps</div>
-                    <div style="margin-top:8px;font-size:12px;color:var(--text-dim);line-height:1.8">
-                      <div style="padding:4px 0" x-show="createdAgent">&#8226; Open <strong>Agents</strong> to start
+                    <div class="wizard-next-steps">
+                      <div class="wizard-next-steps-row" x-show="createdAgent">&#8226; Open <strong>Agents</strong> to start
                         talking to your agent</div>
-                      <div style="padding:4px 0" x-show="!createdAgent">&#8226; Go to <strong>Agents</strong> to create
+                      <div class="wizard-next-steps-row" x-show="!createdAgent">&#8226; Go to <strong>Agents</strong> to create
                         your first agent</div>
-                      <div style="padding:4px 0">&#8226; Browse <strong>Skills</strong> to add capabilities (web search,
+                      <div class="wizard-next-steps-row">&#8226; Browse <strong>Skills</strong> to add capabilities (web search,
                         code execution, etc.)</div>
-                      <div style="padding:4px 0">&#8226; Check <strong>Settings</strong> for advanced configuration
+                      <div class="wizard-next-steps-row">&#8226; Check <strong>Settings</strong> for advanced configuration
                       </div>
-                      <div style="padding:4px 0" x-show="!setupSummary.channel">&#8226; Visit <strong>Channels</strong>
+                      <div class="wizard-next-steps-row" x-show="!setupSummary.channel">&#8226; Visit <strong>Channels</strong>
                         to connect messaging platforms</div>
                     </div>
                   </div>
 
-                  <div class="flex gap-2" style="justify-content:center">
+                  <div class="flex gap-2 wizard-center-actions">
                     <button class="btn btn-primary" @click="finish()"
                       x-text="createdAgent ? 'Start Chatting' : 'Go to Dashboard'"></button>
                     <button class="btn btn-ghost" @click="prevStep()">Back</button>

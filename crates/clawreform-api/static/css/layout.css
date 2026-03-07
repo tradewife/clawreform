@@ -297,6 +297,14 @@
   background: transparent;
 }
 
+.mobile-menu-fab {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 98;
+  padding: 6px 10px;
+}
+
 .shell-border-frame {
   position: relative;
   margin: 10px 24px 8px;
