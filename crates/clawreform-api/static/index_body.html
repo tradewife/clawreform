@@ -6137,8 +6137,9 @@ args = ["-y", "@modelcontextprotocol/server-filesystem", "/path"]</pre>
 
                   <!-- Input -->
                   <div class="wizard-input-row">
-                    <input class="form-input" type="text" x-model="tryItInput" placeholder="Type a message..."
-                      @keydown.enter="sendTryItMessage(tryItInput)" :disabled="tryItSending" class="wizard-input-grow">
+                    <input class="form-input wizard-input-grow" type="text" x-model="tryItInput"
+                      placeholder="Type a message..." @keydown.enter="sendTryItMessage(tryItInput)"
+                      :disabled="tryItSending">
                     <button class="btn btn-primary btn-sm" @click="sendTryItMessage(tryItInput)"
                       :disabled="tryItSending || !tryItInput.trim()">Send</button>
                   </div>
