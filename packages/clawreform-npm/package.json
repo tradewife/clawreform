@@ -1,6 +1,6 @@
 {
   "name": "clawreform",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Cross-platform npm launcher for clawREFORM by aegntic.ai CLI",
   "license": "MIT",
   "author": "clawREFORM by aegntic.ai Team",
