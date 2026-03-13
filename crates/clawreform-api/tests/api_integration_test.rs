@@ -18,6 +18,19 @@ use std::time::Instant;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
+async fn local_tcp_supported() -> bool {
+    tokio::net::TcpListener::bind("127.0.0.1:0").await.is_ok()
+}
+
+macro_rules! skip_if_no_local_tcp {
+    () => {
+        if !local_tcp_supported().await {
+            eprintln!("skipping test: local TCP listeners are not permitted in this environment");
+            return;
+        }
+    };
+}
+
 // ---------------------------------------------------------------------------
 // Test infrastructure
 // ---------------------------------------------------------------------------
@@ -208,6 +221,7 @@ memory_write = ["self.*"]
 
 #[tokio::test]
 async fn test_health_endpoint() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -233,6 +247,7 @@ async fn test_health_endpoint() {
 
 #[tokio::test]
 async fn test_status_endpoint() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -253,6 +268,7 @@ async fn test_status_endpoint() {
 
 #[tokio::test]
 async fn test_spawn_list_kill_agent() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -306,6 +322,7 @@ async fn test_spawn_list_kill_agent() {
 
 #[tokio::test]
 async fn test_agent_session_empty() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -336,6 +353,7 @@ async fn test_agent_session_empty() {
 
 #[tokio::test]
 async fn test_send_message_with_llm() {
+    skip_if_no_local_tcp!();
     if std::env::var("GROQ_API_KEY").is_err() {
         eprintln!("GROQ_API_KEY not set, skipping LLM integration test");
         return;
@@ -389,6 +407,7 @@ async fn test_send_message_with_llm() {
 
 #[tokio::test]
 async fn test_workflow_crud() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -441,6 +460,7 @@ async fn test_workflow_crud() {
 
 #[tokio::test]
 async fn test_trigger_crud() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -518,6 +538,7 @@ async fn test_trigger_crud() {
 
 #[tokio::test]
 async fn test_invalid_agent_id_returns_400() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -551,6 +572,7 @@ async fn test_invalid_agent_id_returns_400() {
 
 #[tokio::test]
 async fn test_kill_nonexistent_agent_returns_404() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -565,6 +587,7 @@ async fn test_kill_nonexistent_agent_returns_404() {
 
 #[tokio::test]
 async fn test_spawn_invalid_manifest_returns_400() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -581,6 +604,7 @@ async fn test_spawn_invalid_manifest_returns_400() {
 
 #[tokio::test]
 async fn test_request_id_header_is_uuid() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -604,6 +628,7 @@ async fn test_request_id_header_is_uuid() {
 
 #[tokio::test]
 async fn test_multiple_agents_lifecycle() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -798,6 +823,7 @@ async fn start_test_server_with_auth(api_key: &str) -> TestServer {
 
 #[tokio::test]
 async fn test_auth_health_is_public() {
+    skip_if_no_local_tcp!();
     let server = start_test_server_with_auth("secret-key-123").await;
     let client = reqwest::Client::new();
 
@@ -812,6 +838,7 @@ async fn test_auth_health_is_public() {
 
 #[tokio::test]
 async fn test_auth_rejects_no_token() {
+    skip_if_no_local_tcp!();
     let server = start_test_server_with_auth("secret-key-123").await;
     let client = reqwest::Client::new();
 
@@ -829,6 +856,7 @@ async fn test_auth_rejects_no_token() {
 
 #[tokio::test]
 async fn test_auth_rejects_wrong_token() {
+    skip_if_no_local_tcp!();
     let server = start_test_server_with_auth("secret-key-123").await;
     let client = reqwest::Client::new();
 
@@ -847,6 +875,7 @@ async fn test_auth_rejects_wrong_token() {
 
 #[tokio::test]
 async fn test_auth_accepts_correct_token() {
+    skip_if_no_local_tcp!();
     let server = start_test_server_with_auth("secret-key-123").await;
     let client = reqwest::Client::new();
 
@@ -864,6 +893,7 @@ async fn test_auth_accepts_correct_token() {
 
 #[tokio::test]
 async fn test_auth_disabled_when_no_key() {
+    skip_if_no_local_tcp!();
     // Empty API key = auth disabled
     let server = start_test_server().await;
     let client = reqwest::Client::new();
@@ -879,6 +909,7 @@ async fn test_auth_disabled_when_no_key() {
 
 #[tokio::test]
 async fn test_company_goals_and_issues_flow() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -942,7 +973,10 @@ async fn test_company_goals_and_issues_flow() {
     assert_eq!(overview["open_issue_count"], 1);
 
     let update_issue_resp = client
-        .put(format!("{}/api/company/issues/{}", server.base_url, issue_id))
+        .put(format!(
+            "{}/api/company/issues/{}",
+            server.base_url, issue_id
+        ))
         .json(&serde_json::json!({
             "status": "done",
             "labels": ["backend", "done"]
@@ -976,7 +1010,10 @@ async fn test_company_goals_and_issues_flow() {
     assert_eq!(issues[0]["comments"].as_array().unwrap().len(), 1);
 
     let delete_issue_resp = client
-        .delete(format!("{}/api/company/issues/{}", server.base_url, issue_id))
+        .delete(format!(
+            "{}/api/company/issues/{}",
+            server.base_url, issue_id
+        ))
         .send()
         .await
         .unwrap();
@@ -985,6 +1022,7 @@ async fn test_company_goals_and_issues_flow() {
 
 #[tokio::test]
 async fn test_company_issue_rejects_unknown_goal() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 

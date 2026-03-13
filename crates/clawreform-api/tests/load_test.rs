@@ -15,6 +15,19 @@ use std::time::{Duration, Instant};
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
+async fn local_tcp_supported() -> bool {
+    tokio::net::TcpListener::bind("127.0.0.1:0").await.is_ok()
+}
+
+macro_rules! skip_if_no_local_tcp {
+    () => {
+        if !local_tcp_supported().await {
+            eprintln!("skipping test: local TCP listeners are not permitted in this environment");
+            return;
+        }
+    };
+}
+
 // ---------------------------------------------------------------------------
 // Test infrastructure (mirrors api_integration_test.rs)
 // ---------------------------------------------------------------------------
@@ -146,6 +159,7 @@ memory_write = ["self.*"]
 /// Test: Concurrent agent spawns — verify kernel handles parallel agent creation.
 #[tokio::test]
 async fn load_concurrent_agent_spawns() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
     let n = 20; // 20 concurrent spawns
@@ -201,6 +215,7 @@ async fn load_concurrent_agent_spawns() {
 /// Test: API endpoint latency — measure p50/p95/p99 for health, status, list agents.
 #[tokio::test]
 async fn load_endpoint_latency() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -265,6 +280,7 @@ async fn load_endpoint_latency() {
 /// Test: Concurrent reads — many clients hitting the same endpoints simultaneously.
 #[tokio::test]
 async fn load_concurrent_reads() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -323,6 +339,7 @@ async fn load_concurrent_reads() {
 /// Test: Session management under load — create, list, and switch sessions.
 #[tokio::test]
 async fn load_session_management() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -424,6 +441,7 @@ async fn load_session_management() {
 /// Test: Workflow creation and listing under load.
 #[tokio::test]
 async fn load_workflow_operations() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -490,6 +508,7 @@ async fn load_workflow_operations() {
 /// Test: Agent spawn + kill cycle — stress the registry.
 #[tokio::test]
 async fn load_spawn_kill_cycle() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 
@@ -546,6 +565,7 @@ async fn load_spawn_kill_cycle() {
 /// Test: Prometheus metrics endpoint under sustained load.
 #[tokio::test]
 async fn load_metrics_sustained() {
+    skip_if_no_local_tcp!();
     let server = start_test_server().await;
     let client = reqwest::Client::new();
 

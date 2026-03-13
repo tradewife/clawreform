@@ -14,6 +14,19 @@ use std::time::Instant;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
+async fn local_tcp_supported() -> bool {
+    tokio::net::TcpListener::bind("127.0.0.1:0").await.is_ok()
+}
+
+macro_rules! skip_if_no_local_tcp {
+    () => {
+        if !local_tcp_supported().await {
+            eprintln!("skipping test: local TCP listeners are not permitted in this environment");
+            return;
+        }
+    };
+}
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -87,6 +100,7 @@ fn test_read_daemon_info_corrupt_json() {
 ///   5. Shut down and verify cleanup
 #[tokio::test]
 async fn test_full_daemon_lifecycle() {
+    skip_if_no_local_tcp!();
     let tmp = tempfile::tempdir().unwrap();
     let daemon_info_path = tmp.path().join("daemon.json");
 
@@ -213,6 +227,7 @@ fn test_stale_daemon_info_detection() {
 /// Test that the server starts and immediately responds to requests.
 #[tokio::test]
 async fn test_server_immediate_responsiveness() {
+    skip_if_no_local_tcp!();
     let tmp = tempfile::tempdir().unwrap();
     let config = KernelConfig {
         home_dir: tmp.path().to_path_buf(),
