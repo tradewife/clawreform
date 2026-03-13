@@ -1,0 +1,440 @@
+#!/usr/bin/env python3
+"""Prepare per-task worktrees and launch visible multi-CLI windows with kitty."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import pathlib
+import shlex
+import shutil
+import subprocess
+import sys
+from dataclasses import asdict, dataclass
+
+
+WORKER_PROMPT = (
+    "You are a launch-task agent for the clawREFORM repository. Work only inside the assigned "
+    "git worktree. Read the commander doc, your task brief, and the metallic launch baseline "
+    "before acting. Write artifacts to the required output/launch directory and keep a concise "
+    "handoff trail."
+)
+
+
+@dataclass(frozen=True)
+class TaskSpec:
+    task_id: int
+    slug: str
+    title: str
+    cli: str
+    model: str
+    doc_name: str
+
+    @property
+    def branch(self) -> str:
+        return f"launch/{self.task_id:02d}-{self.slug}"
+
+    @property
+    def worktree_dir(self) -> str:
+        return f"{self.task_id:02d}-{self.slug}"
+
+    @property
+    def artifact_slug(self) -> str:
+        return f"{self.task_id:02d}-{self.slug}"
+
+
+TASKS: dict[int, TaskSpec] = {
+    1: TaskSpec(1, "pre-site-deployment", "01 Site Deployment", "codex", "gpt-5-codex", "1_clawREFORM_pre-site-deployment.md"),
+    2: TaskSpec(2, "audit-dl-path", "02 Download Audit", "codex", "gpt-5-codex", "2_clawREFORM_audit_dl-path.md"),
+    3: TaskSpec(3, "release-packaging-proof", "03 Packaging Proof", "codex", "gpt-5-codex", "3_clawREFORM_release-packaging-proof.md"),
+    4: TaskSpec(4, "onboarding-first-run-smoke", "04 First Run Smoke", "claude", "claude-sonnet-4-20250514", "4_clawREFORM_onboarding-first-run-smoke.md"),
+    5: TaskSpec(5, "parallel-proof-screenshots", "05 Proof Screenshots", "opencode", "google/gemini-2.5-pro", "5_clawREFORM_parallel-proof-screenshots.md"),
+    6: TaskSpec(6, "public-alpha-go-live", "06 Go Live", "pi", "google/gemini-2.5-pro", "6_clawREFORM_public-alpha-go-live.md"),
+    7: TaskSpec(7, "twitter-x-launch-chain", "07 X Launch", "claude", "claude-sonnet-4-20250514", "7_clawREFORM_twitter-x-launch-chain.md"),
+    8: TaskSpec(8, "youtube-launch-automation", "08 YouTube", "opencode", "google/gemini-2.5-pro", "8_clawREFORM_youtube-launch-automation.md"),
+    9: TaskSpec(9, "reddit-medium-quora-chain", "09 Community Content", "gemini", "gemini-2.5-pro", "9_clawREFORM_reddit-medium-quora-chain.md"),
+    10: TaskSpec(10, "content-creator", "10 Content Creator", "claude", "claude-sonnet-4-20250514", "10_clawREFORM_content-creator.md"),
+    11: TaskSpec(11, "content-distributor", "11 Distribution", "opencode", "google/gemini-2.5-pro", "11_clawREFORM_content-distributor.md"),
+    12: TaskSpec(12, "email-list-super-sherlock", "12 Email Sherlock", "gemini", "gemini-2.5-pro", "12_clawREFORM_email-list-super-sherlock.md"),
+    13: TaskSpec(13, "launch-control-room", "13 Control Room", "pi", "google/gemini-2.5-pro", "13_clawREFORM_launch-control-room.md"),
+    14: TaskSpec(14, "design-system-translation", "14 Design Translation", "claude", "claude-sonnet-4-20250514", "14_clawREFORM_design-system-translation.md"),
+}
+
+GROUPS: dict[str, list[int]] = {
+    "immediate": [1, 2, 4, 5, 10, 13, 14],
+    "content": [7, 8, 9, 12],
+    "followup": [3, 11],
+    "go-live": [6],
+    "all": [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14],
+}
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--name", default="launch-alpha", help="Run name for .swarm state.")
+    parser.add_argument(
+        "--group",
+        choices=sorted(GROUPS),
+        default="immediate",
+        help="Predefined task group to prepare.",
+    )
+    parser.add_argument(
+        "--tasks",
+        help="Comma-separated task IDs. Overrides --group if provided.",
+    )
+    parser.add_argument(
+        "--worktree-root",
+        default=".worktrees",
+        help="Directory under the repo root that will hold linked worktrees.",
+    )
+    parser.add_argument(
+        "--launch",
+        action="store_true",
+        help="Launch detached screen sessions and visible kitty windows.",
+    )
+    parser.add_argument(
+        "--open-windows-only",
+        action="store_true",
+        help="Open visible kitty windows for existing sessions without launching new sessions.",
+    )
+    return parser.parse_args()
+
+
+def repo_root() -> pathlib.Path:
+    return pathlib.Path(__file__).resolve().parents[2]
+
+
+def require_binary(name: str) -> str:
+    resolved = shutil.which(name)
+    if not resolved:
+        raise SystemExit(f"Required binary not found in PATH: {name}")
+    return resolved
+
+
+def resolve_tasks(args: argparse.Namespace) -> list[TaskSpec]:
+    task_ids = GROUPS[args.group]
+    if args.tasks:
+        task_ids = [int(part.strip()) for part in args.tasks.split(",") if part.strip()]
+    unknown = [task_id for task_id in task_ids if task_id not in TASKS]
+    if unknown:
+        raise SystemExit(f"Unknown task IDs: {unknown}")
+    return [TASKS[task_id] for task_id in task_ids]
+
+
+def run(cmd: list[str], cwd: pathlib.Path) -> None:
+    subprocess.run(cmd, cwd=cwd, check=True)
+
+
+def branch_exists(workspace: pathlib.Path, branch: str) -> bool:
+    result = subprocess.run(
+        ["git", "show-ref", "--verify", "--quiet", f"refs/heads/{branch}"],
+        cwd=workspace,
+    )
+    return result.returncode == 0
+
+
+def ensure_worktree(workspace: pathlib.Path, worktree_root: pathlib.Path, task: TaskSpec) -> pathlib.Path:
+    worktree_path = worktree_root / task.worktree_dir
+    if worktree_path.exists():
+        return worktree_path
+
+    cmd = ["git", "worktree", "add", str(worktree_path)]
+    if branch_exists(workspace, task.branch):
+        cmd.append(task.branch)
+    else:
+        cmd.extend(["-b", task.branch, "HEAD"])
+    run(cmd, workspace)
+    return worktree_path
+
+
+def sync_bootstrap_docs(workspace: pathlib.Path, worktree: pathlib.Path) -> None:
+    src_launch = workspace / "docs" / "launch-tasks"
+    dst_launch = worktree / "docs" / "launch-tasks"
+    shutil.copytree(src_launch, dst_launch, dirs_exist_ok=True)
+
+    src_design = workspace / "docs" / "design" / "launch-metallic-baseline.md"
+    dst_design = worktree / "docs" / "design" / "launch-metallic-baseline.md"
+    dst_design.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src_design, dst_design)
+
+
+def local_env_exports(run_root: pathlib.Path, cli_name: str, session_dir: pathlib.Path) -> dict[str, str]:
+    home_dir = run_root / "homes" / cli_name
+    for directory in (
+        home_dir,
+        home_dir / ".config",
+        home_dir / ".local" / "share",
+        home_dir / ".local" / "state",
+        home_dir / ".cache",
+        home_dir / ".pi" / "agent",
+        home_dir / ".codex",
+        home_dir / ".config" / "opencode",
+        home_dir / ".local" / "share" / "opencode",
+        home_dir / ".gemini",
+        home_dir / ".claude",
+        session_dir,
+    ):
+        directory.mkdir(parents=True, exist_ok=True)
+
+    env = {
+        "HOME": str(home_dir),
+        "XDG_CONFIG_HOME": str(home_dir / ".config"),
+        "XDG_DATA_HOME": str(home_dir / ".local" / "share"),
+        "XDG_STATE_HOME": str(home_dir / ".local" / "state"),
+        "XDG_CACHE_HOME": str(home_dir / ".cache"),
+        "PI_CODING_AGENT_DIR": str(home_dir / ".pi" / "agent"),
+        "PI_OFFLINE": "1",
+        "CODEX_HOME": str(home_dir / ".codex"),
+        "OPENCODE_CONFIG_HOME": str(home_dir / ".config" / "opencode"),
+        "OPENCODE_DATA_HOME": str(home_dir / ".local" / "share" / "opencode"),
+        "GEMINI_CLI_HOME": str(home_dir / ".gemini"),
+        "CLAUDE_CONFIG_DIR": str(home_dir / ".claude"),
+        "SWARM_SESSION_DIR": str(session_dir),
+    }
+    forwarded = [
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "OPENROUTER_API_KEY",
+        "OPENCODE_API_KEY",
+    ]
+    for key in forwarded:
+        if key in os.environ:
+            env[key] = os.environ[key]
+    return env
+
+
+def create_prompt_file(task: TaskSpec, worktree: pathlib.Path, run_root: pathlib.Path) -> pathlib.Path:
+    prompt_dir = run_root / "prompts"
+    prompt_dir.mkdir(parents=True, exist_ok=True)
+    prompt_file = prompt_dir / f"{task.task_id:02d}-{task.slug}.md"
+    commander = "docs/launch-tasks/0_clawREFORM_launch-commander.md"
+    baseline = "docs/design/launch-metallic-baseline.md"
+    task_doc = f"docs/launch-tasks/{task.doc_name}"
+    artifact_dir = f"output/launch/{task.artifact_slug}/"
+    body = (
+        f"{WORKER_PROMPT}\n\n"
+        f"Assigned task: {task.title}\n"
+        f"Primary docs to read first:\n"
+        f"- {commander}\n"
+        f"- {task_doc}\n"
+        f"- {baseline}\n\n"
+        f"Working directory: {worktree}\n"
+        f"Artifact directory: {artifact_dir}\n"
+        "Leave a concise handoff in the artifact directory when done.\n"
+        "Capture screenshots for every meaningful proof step.\n"
+    )
+    prompt_file.write_text(body, encoding="utf-8")
+    return prompt_file
+
+
+def initial_prompt(task: TaskSpec) -> str:
+    return (
+        f"Start launch task {task.task_id} for clawREFORM now. "
+        f"Read docs/launch-tasks/0_clawREFORM_launch-commander.md, "
+        f"docs/launch-tasks/{task.doc_name}, and docs/design/launch-metallic-baseline.md, "
+        f"then execute the prompt chain. Write all outputs to output/launch/{task.artifact_slug}/. "
+        "Begin by stating the first concrete action, then do the work."
+    )
+
+
+def base_command(task: TaskSpec, worktree: pathlib.Path, prompt_file: pathlib.Path, session_dir: pathlib.Path) -> list[str]:
+    cli = task.cli
+    prompt = initial_prompt(task)
+    if cli == "pi":
+        return [
+            require_binary("pi"),
+            "--session-dir",
+            str(session_dir),
+            "--model",
+            task.model,
+            "--tools",
+            "read,bash,edit,write,grep,find,ls",
+            "--append-system-prompt",
+            str(prompt_file),
+            prompt,
+        ]
+    if cli == "gemini":
+        return [require_binary("gemini"), "--model", task.model, "--prompt", prompt]
+    if cli == "opencode":
+        return [
+            require_binary("opencode"),
+            str(worktree),
+            "--model",
+            task.model,
+            "--prompt",
+            prompt,
+        ]
+    if cli == "codex":
+        return [
+            require_binary("codex"),
+            "--full-auto",
+            "-C",
+            str(worktree),
+            "--model",
+            task.model,
+            "-c",
+            "shell_environment_policy.inherit=all",
+            prompt,
+        ]
+    if cli == "claude":
+        return [
+            require_binary("claude"),
+            "--permission-mode",
+            "auto",
+            "--add-dir",
+            str(worktree),
+            "--model",
+            task.model,
+            "--append-system-prompt",
+            str(prompt_file),
+            prompt,
+        ]
+    raise SystemExit(f"Unsupported CLI: {cli}")
+
+
+def render_shell_command(command: list[str], env: dict[str, str], cwd: pathlib.Path, log_file: pathlib.Path) -> str:
+    exports = " ".join(f"{key}={shlex.quote(value)}" for key, value in env.items())
+    quoted = " ".join(shlex.quote(part) for part in command)
+    return (
+        f"cd {shlex.quote(str(cwd))} && "
+        f"mkdir -p {shlex.quote(str(log_file.parent))} && "
+        f"env {exports} {quoted} >> {shlex.quote(str(log_file))} 2>&1"
+    )
+
+
+def make_screen_command(session_name: str, shell_command: str) -> list[str]:
+    return [require_binary("screen"), "-dmS", session_name, "bash", "-lc", shell_command]
+
+
+def sync_launch_inputs(workspace: pathlib.Path, worktree: pathlib.Path, task: TaskSpec, run_name: str) -> dict[str, str]:
+    sync_bootstrap_docs(workspace, worktree)
+
+    artifact_dir = worktree / "output" / "launch" / task.artifact_slug / "screenshots"
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+
+    run_root = worktree / ".swarm" / run_name
+    prompt_file = create_prompt_file(task, worktree, run_root)
+    session_dir = run_root / "sessions" / task.cli
+    session_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_root / "logs" / f"{task.task_id:02d}-{task.slug}.log"
+    env = local_env_exports(run_root, task.cli, session_dir)
+    command = base_command(task, worktree, prompt_file, session_dir)
+    shell_command = render_shell_command(command, env, worktree, log_file)
+    session_name = f"launch-{run_name}-{task.task_id:02d}-{task.cli}"
+    screen_command = make_screen_command(session_name, shell_command)
+
+    return {
+        "task_id": str(task.task_id),
+        "title": task.title,
+        "branch": task.branch,
+        "worktree": str(worktree),
+        "artifact_dir": str(worktree / "output" / "launch" / task.artifact_slug),
+        "prompt_file": str(prompt_file),
+        "log_file": str(log_file),
+        "screen_session": session_name,
+        "screen_command": " ".join(shlex.quote(part) for part in screen_command),
+        "agent_command": " ".join(shlex.quote(part) for part in command),
+    }
+
+
+def build_kitty_session(run_root: pathlib.Path, selected: list[dict[str, str]]) -> pathlib.Path:
+    session_file = run_root / "kitty-live.session"
+    lines: list[str] = ["# Generated by launch_live_windows.py"]
+    for index, item in enumerate(selected):
+        if index > 0:
+            lines.append(f"new_os_window {item['title']}")
+        lines.append(f"cd {item['worktree']}")
+        lines.append(f"title {item['title']}")
+        attach = (
+            f"screen -r {shlex.quote(item['screen_session'])} "
+            f"|| screen -x {shlex.quote(item['screen_session'])} "
+            f"|| true; "
+            f"echo; echo '[session ended] {item['screen_session']}'; "
+            f"echo 'log: {item['log_file']}'; exec bash"
+        )
+        lines.append(f"launch bash -lc {shlex.quote(attach)}")
+        lines.append("")
+    session_file.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+    return session_file
+
+
+def write_manifest(run_root: pathlib.Path, selected: list[dict[str, str]], session_file: pathlib.Path) -> pathlib.Path:
+    manifest = {
+        "run_name": run_root.name,
+        "session_file": str(session_file),
+        "tasks": selected,
+    }
+    manifest_path = run_root / "visible-launch-manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return manifest_path
+
+
+def main() -> int:
+    args = parse_args()
+    workspace = repo_root()
+    worktree_root = workspace / args.worktree_root
+    worktree_root.mkdir(parents=True, exist_ok=True)
+
+    selected_tasks = resolve_tasks(args)
+    run_root = workspace / ".swarm" / args.name
+    run_root.mkdir(parents=True, exist_ok=True)
+
+    selected: list[dict[str, str]] = []
+    for task in selected_tasks:
+        worktree = ensure_worktree(workspace, worktree_root, task)
+        data = sync_launch_inputs(workspace, worktree, task, args.name)
+        selected.append(data)
+
+    session_file = build_kitty_session(run_root, selected)
+    manifest_path = write_manifest(run_root, selected, session_file)
+
+    print(f"Prepared visible launch manifest: {manifest_path}")
+    print(f"Kitty session file: {session_file}")
+    for item in selected:
+        print(f"[task {item['task_id']}] {item['title']}")
+        print(f"  branch: {item['branch']}")
+        print(f"  worktree: {item['worktree']}")
+        print(f"  screen: {item['screen_session']}")
+        print(f"  log: {item['log_file']}")
+
+    if args.launch:
+        for item in selected:
+            subprocess.run(shlex.split(item["screen_command"]), check=True)
+        subprocess.run(
+            [require_binary("kitty"), "--detach", "--session", str(session_file)],
+            check=True,
+        )
+        print("\nVisible kitty windows launched and attached to live screen sessions.")
+    elif args.open_windows_only:
+        subprocess.run(
+            [require_binary("kitty"), "--detach", "--session", str(session_file)],
+            check=True,
+        )
+        print("\nVisible kitty windows opened for existing sessions.")
+    else:
+        print("\nPreparation complete.")
+        print("Launch later with:")
+        print(
+            "  "
+            + " ".join(
+                shlex.quote(part)
+                for part in [
+                    sys.executable,
+                    str(pathlib.Path(__file__).resolve()),
+                    "--name",
+                    args.name,
+                    "--tasks",
+                    ",".join(str(task.task_id) for task in selected_tasks),
+                    "--launch",
+                ]
+            )
+        )
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
