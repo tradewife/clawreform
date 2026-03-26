@@ -4,60 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DevScribe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       width: 320px;
       min-height: 200px;
-      background: #1a1a1a;
-      color: #e0e0e0;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(180deg, #1f2534 0%, #0d121d 100%);
+      color: #e9edf7;
+      font-family: 'Manrope', -apple-system, system-ui, sans-serif;
       padding: 16px;
     }
     h1 {
       font-size: 18px;
-      font-weight: 600;
-      color: #f0a800;
-      margin-bottom: 4px;
+      font-weight: 800;
+      color: #d9a75a;
+      margin-bottom: 2px;
+      letter-spacing: -0.3px;
     }
     .subtitle {
       font-size: 11px;
-      color: #888;
+      color: #73809a;
       margin-bottom: 16px;
+      font-weight: 500;
     }
     .status-bar {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 12px;
-      background: #252525;
-      border-radius: 6px;
+      padding: 10px 14px;
+      background: #141824;
+      border: 1px solid #20273a;
+      border-radius: 14px;
       margin-bottom: 16px;
       font-size: 13px;
+      font-weight: 500;
+      box-shadow: inset 0 4px 10px rgba(0,0,0,0.8), inset 1px 1px 0 rgba(0,0,0,0.64), inset -1px -1px 0 rgba(255,255,255,0.06);
     }
     .status-dot {
       width: 8px; height: 8px;
       border-radius: 50%;
-      background: #666;
+      background: #2b3348;
       flex-shrink: 0;
     }
-    .status-dot.connected { background: #4caf50; }
-    .status-dot.disconnected { background: #f44336; }
+    .status-dot.connected { background: #57d39b; box-shadow: 0 0 8px rgba(87,211,155,0.4); }
+    .status-dot.disconnected { background: #f07178; }
     .note-count {
       text-align: center;
-      padding: 12px;
-      background: #252525;
-      border-radius: 6px;
+      padding: 16px;
+      background: #141824;
+      border: 1px solid color-mix(in srgb, #2b3348 74%, #d9a75a 26%);
+      border-radius: 18px;
       margin-bottom: 16px;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.18), 0 2px 5px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02);
     }
     .note-count .number {
-      font-size: 32px;
-      font-weight: 700;
-      color: #f0a800;
+      font-size: 36px;
+      font-weight: 800;
+      color: #d9a75a;
+      letter-spacing: -1px;
+      text-shadow: 0 0 18px rgba(241,206,130,0.2);
     }
     .note-count .label {
-      font-size: 12px;
-      color: #888;
+      font-size: 11px;
+      color: #73809a;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      margin-top: 2px;
     }
     .actions {
       display: flex;
@@ -69,34 +84,44 @@
       align-items: center;
       gap: 8px;
       width: 100%;
+      min-height: 40px;
       padding: 10px 14px;
-      border: 1px solid #333;
-      border-radius: 6px;
-      background: #252525;
-      color: #e0e0e0;
+      border: 1px solid color-mix(in srgb, #d9a75a 18%, #2b3348);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.08) 36%, rgba(0,0,0,0.32) 100%), #1b2030;
+      color: #e9edf7;
+      font-family: 'Manrope', -apple-system, system-ui, sans-serif;
       font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.18), 0 2px 5px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -1px 0 rgba(0,0,0,0.34);
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
     }
-    .btn:hover { background: #333; border-color: #f0a800; }
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, #d9a75a 34%, #434d66);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.18), 0 2px 5px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.18), 0 0 0 1px rgba(217,167,90,0.18), 0 12px 24px rgba(146,99,39,0.24);
+    }
+    .btn:active { transform: translateY(1px) scale(0.985); }
     .btn-icon { font-size: 16px; width: 20px; text-align: center; }
     .footer {
       margin-top: 16px;
       padding-top: 12px;
-      border-top: 1px solid #333;
+      border-top: 1px solid #20273a;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .footer a {
-      color: #f0a800;
+      color: #d9a75a;
       font-size: 12px;
       text-decoration: none;
+      font-weight: 500;
     }
     .footer a:hover { text-decoration: underline; }
     .version {
       font-size: 11px;
-      color: #555;
+      color: #73809a;
     }
   </style>
 </head>
@@ -106,7 +131,7 @@
 
   <div class="status-bar">
     <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">Checking dashboard…</span>
+    <span id="statusText">Checking dashboard</span>
   </div>
 
   <div class="note-count">
