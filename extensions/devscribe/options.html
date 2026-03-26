@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevScribe — Settings</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #121214;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(180deg, #1a1a1e 0%, #121214 100%);
+      border-bottom: 1px solid #2a2a2e;
+      padding: 24px 32px;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #f59e0b;
+      letter-spacing: -0.3px;
+    }
+    .header .subtitle {
+      font-size: 12px;
+      color: #666;
+      margin-top: 2px;
+    }
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+    .section {
+      background: #1a1a1e;
+      border: 1px solid #2a2a2e;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f59e0b;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title .icon { font-size: 16px; }
+
+    /* Form elements */
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .field input[type="text"],
+    .field input[type="password"],
+    .field select {
+      width: 100%;
+      padding: 10px 12px;
+      background: #252529;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-size: 13px;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .field input:focus,
+    .field select:focus {
+      outline: none;
+      border-color: #f59e0b;
+    }
+    .field .hint {
+      font-size: 11px;
+      color: #555;
+      margin-top: 4px;
+    }
+    .field-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .field-row .field { flex: 1; margin-bottom: 0; }
+
+    /* Buttons */
+    .btn {
+      padding: 9px 16px;
+      border: 1px solid #333;
+      border-radius: 6px;
+      background: #252529;
+      color: #e0e0e0;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: #333; border-color: #555; }
+    .btn-primary {
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #121214;
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: #d97706; border-color: #d97706; }
+    .btn-danger {
+      border-color: #b91c1c;
+      color: #f87171;
+    }
+    .btn-danger:hover { background: #b91c1c; color: #fff; }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Toggle switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #222;
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label {
+      font-size: 13px;
+      color: #ccc;
+    }
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle .slider {
+      position: absolute;
+      inset: 0;
+      background: #333;
+      border-radius: 11px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle .slider::before {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      left: 3px;
+      top: 3px;
+      background: #888;
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .toggle input:checked + .slider { background: #f59e0b44; }
+    .toggle input:checked + .slider::before {
+      transform: translateX(18px);
+      background: #f59e0b;
+    }
+
+    /* Range slider */
+    .range-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #222;
+    }
+    .range-row:last-child { border-bottom: none; }
+    .range-label {
+      font-size: 13px;
+      color: #ccc;
+      flex: 1;
+    }
+    .range-value {
+      font-size: 13px;
+      color: #f59e0b;
+      font-weight: 600;
+      width: 40px;
+      text-align: right;
+      margin-right: 12px;
+    }
+    .range-row input[type="range"] {
+      width: 140px;
+      accent-color: #f59e0b;
+      cursor: pointer;
+    }
+
+    /* Status line */
+    .status-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 6px 0;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #555;
+    }
+    .status-dot.ok { background: #4caf50; }
+    .status-dot.err { background: #f44336; }
+    .status-dot.loading { background: #f59e0b; animation: pulse 1s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Data management */
+    .data-stats {
+      display: flex;
+      gap: 24px;
+      padding: 12px 0;
+      border-bottom: 1px solid #222;
+      margin-bottom: 16px;
+    }
+    .data-stat .value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #f59e0b;
+    }
+    .data-stat .label {
+      font-size: 11px;
+      color: #666;
+    }
+    .data-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      background: #252529;
+      border: 1px solid #333;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #e0e0e0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 100;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { border-color: #b91c1c; }
+    .toast.success { border-color: #15803d; }
+
+    /* About */
+    .about-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 13px;
+    }
+    .about-row .label { color: #666; }
+    .about-row a {
+      color: #f59e0b;
+      text-decoration: none;
+    }
+    .about-row a:hover { text-decoration: underline; }
+    .about-brand {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #222;
+      font-size: 11px;
+      color: #444;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>DevScribe Settings</h1>
+    <p class="subtitle">Configure your development companion</p>
+  </div>
+
+  <div class="container">
+
+    <!-- GitHub Integration -->
+    <div class="section">
+      <div class="section-title"><span class="icon">&#9679;</span> GitHub Integration</div>
+      <div class="field">
+        <label for="ghToken">Personal Access Token</label>
+        <div class="field-row">
+          <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+          <button class="btn" id="btnTestGh">Test Connection</button>
+        </div>
+        <div class="status-line" id="ghStatus" style="display:none">
+          <div class="status-dot" id="ghStatusDot"></div>
+          <span id="ghStatusText"></span>
+        </div>
+      </div>
+      <div class="field">
+        <label for="ghRepo">Repository (owner/repo)</label>
+        <input type="text" id="ghRepo" placeholder="octocat/my-project">
+      </div>
+      <div class="field">
+        <label for="ghLabels">Default Labels (comma-separated)</label>
+        <input type="text" id="ghLabels" placeholder="devscribe, bug">
+        <div class="hint">Automatically applied when creating issues</div>
+      </div>
+      <div style="margin-top: 16px; text-align: right;">
+        <button class="btn btn-primary" id="btnSaveGh">Save GitHub Settings</button>
+      </div>
+    </div>
+
+    <!-- Capture Settings -->
+    <div class="section">
+      <div class="section-title"><span class="icon">&#9679;</span> Capture Settings</div>
+      <div class="toggle-row">
+        <span class="toggle-label">Auto-capture console logs</span>
+        <label class="toggle">
+          <input type="checkbox" id="capConsole" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Auto-capture network requests</span>
+        <label class="toggle">
+          <input type="checkbox" id="capNetwork">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Show toast notifications</span>
+        <label class="toggle">
+          <input type="checkbox" id="capToasts" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="range-row">
+        <span class="range-label">Max console entries</span>
+        <span class="range-value" id="capConsoleVal">100</span>
+        <input type="range" id="capConsoleMax" min="50" max="500" step="10" value="100">
+      </div>
+      <div class="range-row">
+        <span class="range-label">Max network entries</span>
+        <span class="range-value" id="capNetworkVal">50</span>
+        <input type="range" id="capNetworkMax" min="20" max="200" step="10" value="50">
+      </div>
+    </div>
+
+    <!-- Panel Settings -->
+    <div class="section">
+      <div class="section-title"><span class="icon">&#9679;</span> Panel Settings</div>
+      <div class="toggle-row">
+        <span class="toggle-label">Auto-open panel on dashboard load</span>
+        <label class="toggle">
+          <input type="checkbox" id="panelAutoOpen" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Show in minimized state by default</span>
+        <label class="toggle">
+          <input type="checkbox" id="panelMinimized">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="field" style="margin-top: 12px; margin-bottom: 0;">
+        <label for="defaultNoteType">Default note type</label>
+        <select id="defaultNoteType">
+          <option value="bug">Bug</option>
+          <option value="feature">Feature</option>
+          <option value="debt">Technical Debt</option>
+          <option value="performance">Performance</option>
+          <option value="observation" selected>Observation</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Data Management -->
+    <div class="section">
+      <div class="section-title"><span class="icon">&#9679;</span> Data Management</div>
+      <div class="data-stats">
+        <div class="data-stat">
+          <div class="value" id="statNoteCount">0</div>
+          <div class="label">Total Notes</div>
+        </div>
+        <div class="data-stat">
+          <div class="value" id="statStorage">0 KB</div>
+          <div class="label">Storage Used</div>
+        </div>
+      </div>
+      <div class="data-actions">
+        <button class="btn" id="btnExport">&#8595; Export All Notes</button>
+        <button class="btn" id="btnImport">&#8593; Import Notes</button>
+        <input type="file" id="importFile" accept=".json" style="display:none">
+        <button class="btn btn-danger" id="btnClear">Clear All Notes</button>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="section">
+      <div class="section-title"><span class="icon">&#9679;</span> About</div>
+      <div class="about-row">
+        <span class="label">Version</span>
+        <span>0.1.0</span>
+      </div>
+      <div class="about-row">
+        <span class="label">Repository</span>
+        <a href="https://github.com/aegntic/clawreform" target="_blank">github.com/aegntic/clawreform</a>
+      </div>
+      <div class="about-row">
+        <span class="label">Documentation</span>
+        <a href="https://clawreform.ai/docs" target="_blank">clawreform.ai/docs</a>
+      </div>
+      <div class="about-brand">Made by aegntic.ai</div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>

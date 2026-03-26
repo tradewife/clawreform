@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevScribe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 320px;
+      min-height: 200px;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f0a800;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #252525;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #666;
+      flex-shrink: 0;
+    }
+    .status-dot.connected { background: #4caf50; }
+    .status-dot.disconnected { background: #f44336; }
+    .note-count {
+      text-align: center;
+      padding: 12px;
+      background: #252525;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+    .note-count .number {
+      font-size: 32px;
+      font-weight: 700;
+      color: #f0a800;
+    }
+    .note-count .label {
+      font-size: 12px;
+      color: #888;
+    }
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #333;
+      border-radius: 6px;
+      background: #252525;
+      color: #e0e0e0;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn:hover { background: #333; border-color: #f0a800; }
+    .btn-icon { font-size: 16px; width: 20px; text-align: center; }
+    .footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer a {
+      color: #f0a800;
+      font-size: 12px;
+      text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+    .version {
+      font-size: 11px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>DevScribe</h1>
+  <p class="subtitle">clawREFORM development companion</p>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Checking dashboard…</span>
+  </div>
+
+  <div class="note-count">
+    <div class="number" id="noteCount">0</div>
+    <div class="label">saved notes</div>
+  </div>
+
+  <div class="actions">
+    <button class="btn" id="btnNewNote">
+      <span class="btn-icon">+</span> New Note
+    </button>
+    <button class="btn" id="btnElementSelect">
+      <span class="btn-icon">◎</span> Element Select
+    </button>
+    <button class="btn" id="btnExport">
+      <span class="btn-icon">↓</span> Export Notes
+    </button>
+  </div>
+
+  <div class="footer">
+    <a href="#" id="optionsLink">Settings</a>
+    <span class="version">v0.1.0</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
