@@ -146,6 +146,12 @@
     selectingElement: false,
   };
 
+  // ─── Inject Fonts ──────────────────────────────────────────────────────
+  const fontLink = document.createElement("link");
+  fontLink.rel = "stylesheet";
+  fontLink.href = "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap";
+  document.head.appendChild(fontLink);
+
   // ─── Build Shadow DOM ──────────────────────────────────────────────────
   const host = document.createElement("div");
   host.id = "devscribe-host";
@@ -156,7 +162,6 @@
   // ─── Styles — Gold Metallic / Brushed Gunmetal / Silver Emboss ──────────
   const style = document.createElement("style");
   style.textContent = `
-    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
     /* ── Gradients ── */
