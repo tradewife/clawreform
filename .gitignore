@@ -59,3 +59,4 @@ output/demo/
 .swarm/
 crates/clawreform-desktop/gen/schemas/macOS-schema.json
 crates/clawreform-desktop/gen/schemas/linux-schema.json
+.gstack/
