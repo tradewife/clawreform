@@ -6,14 +6,16 @@
 
   // ─── Console Ring Buffer ───────────────────────────────────────────────
   const consoleBuffer = [];
-  const MAX_CONSOLE = 100;
+  let MAX_CONSOLE = 100;
   const origConsole = { log: console.log, warn: console.warn, error: console.error };
 
   ["log", "warn", "error"].forEach((level) => {
     console[level] = function (...args) {
       origConsole[level].apply(console, args);
-      consoleBuffer.push({ level, args: args.map((a) => serializeArg(a)), ts: Date.now() });
-      if (consoleBuffer.length > MAX_CONSOLE) consoleBuffer.shift();
+      if (settings.capture_console) {
+        consoleBuffer.push({ level, args: args.map((a) => serializeArg(a)), ts: Date.now() });
+        if (consoleBuffer.length > MAX_CONSOLE) consoleBuffer.shift();
+      }
     };
   });
 
@@ -27,7 +29,7 @@
 
   // ─── Network Ring Buffer ───────────────────────────────────────────────
   const networkBuffer = [];
-  const MAX_NETWORK = 50;
+  let MAX_NETWORK = 50;
 
   const origFetch = window.fetch;
   window.fetch = function (input, init) {
@@ -71,6 +73,7 @@
   };
 
   function pushNetwork(entry) {
+    if (!settings.capture_network) return;
     networkBuffer.push(entry);
     if (networkBuffer.length > MAX_NETWORK) networkBuffer.shift();
   }
@@ -149,6 +152,29 @@
     searchHistory: [],
     searchFilters: { type: "all", dateRange: "all" },
   };
+
+  // ─── Settings Cache ─────────────────────────────────────────────
+  let settings = {
+    tooltip_enabled: true,
+    search_history: [],
+    keyboard_shortcuts: true,
+    capture_console: true,
+    capture_network: false,
+    show_toasts: true,
+    max_console_entries: 100,
+    max_network_entries: 50,
+    panel_auto_open: true,
+    panel_minimized: false,
+    default_note_type: "observation",
+    default_labels: "",
+  };
+
+  async function loadSettings() {
+    const resp = await sendToBackground("GET_SETTINGS");
+    if (resp && resp.success && resp.data) {
+      settings = { ...settings, ...resp.data };
+    }
+  }
 
   // ─── Inject Fonts ──────────────────────────────────────────────────────
   const fontLink = document.createElement("link");
@@ -587,6 +613,18 @@
       background:linear-gradient(180deg, #606080 0%, #404060 100%);
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
     }
+    /* ── Shortcuts Help ── */
+    .shortcuts-help{padding:8px 12px}
+    .shortcut-item{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:4px 0;font-size:11px;color:#8888aa;
+    }
+    .shortcut-key{
+      font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;
+      background:linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0.08) 100%), #181b2a;
+      border:1px solid rgba(255,215,0,0.15);border-radius:6px;
+      padding:2px 8px;color:#ffd700;
+    }
   `;
   root.appendChild(style);
 
@@ -602,13 +640,6 @@
 
   let tooltipTimeout = null;
   let tooltipEnabled = true;
-
-  // Load tooltip setting
-  sendToBackground("GET_SETTINGS").then((resp) => {
-    if (resp?.success && resp.data?.tooltip_enabled !== undefined) {
-      tooltipEnabled = resp.data.tooltip_enabled;
-    }
-  });
 
   function showTooltip(x, y, content) {
     clearTimeout(tooltipTimeout);
@@ -785,20 +816,6 @@
 
   document.addEventListener("mouseleave", hideTooltip, { passive: true })
 
-  // ─── Keyboard Shortcuts ─────────────────────────────────────────
-  const SHORTcutsHelp = document.createElement("div")
-  shortcutsHelp.className = "shortcuts-help"
-  shortcutsHelp.innerHTML = `
-    <div class="divider"></div>
-    <div class="shortcut-item"><span class="shortcut-key">Ctrl+Shift+N</span> New Note</div></div>
-    <div class="shortcut-item"><span class="shortcut-key">Ctrl+shift+s</span> Screenshot</div></div>
-    <div class="shortcut-item"><span class="shortcut-key">Ctrl+shift+e</span> Element Select</div></div>
-    <div class="shortcut-item"><span class="shortcut-key">Ctrl+shift+f</span> Search</div></div>
-    <div class="shortcut-item"><span class="shortcut-key">Ctrl+shift+h</span> Toggle tooltips</div></div>
-    <div class="shortcut-item"><span class="shortcut-key">Esc</span> Cancel</div></div>
-  `
-  body.appendChild(shortcutsHelp)
-
   // ─── FAB ───────────────────────────────────────────────────
   const fab = document.createElement("button");
   fab.className = "fab";
@@ -813,9 +830,9 @@
 
   // Handle
   const handleEl = document.createElement("div")
-  handle.className = "handle"
-  handle.innerHTML = '<span class="handle-title">DEVScribe</span><div class="handle-btns"><button class="handle-btn" id="ds-minimize" title="Minimize">&#x2212;</button></div>'
-  panel.appendChild(handle)
+  handleEl.className = "handle"
+  handleEl.innerHTML = '<span class="handle-title">DEVScribe</span><div class="handle-btns"><button class="handle-btn" id="ds-minimize" title="Minimize">&#x2212;</button></div>'
+  panel.appendChild(handleEl)
 
   // Tabs
   const tabs = document.createElement("div");
@@ -835,6 +852,20 @@
   const body = document.createElement("div");
   body.className = "body"
   panel.appendChild(body)
+
+  // ─── Keyboard Shortcuts Help ─────────────────────────────────────
+  const shortcutsHelp = document.createElement("div")
+  shortcutsHelp.className = "shortcuts-help"
+  shortcutsHelp.innerHTML = `
+    <div class="divider"></div>
+    <div class="shortcut-item"><span class="shortcut-key">Ctrl+Shift+N</span> New Note</div>
+    <div class="shortcut-item"><span class="shortcut-key">Ctrl+Shift+S</span> Screenshot</div>
+    <div class="shortcut-item"><span class="shortcut-key">Ctrl+Shift+E</span> Element Select</div>
+    <div class="shortcut-item"><span class="shortcut-key">Ctrl+Shift+F</span> Search</div>
+    <div class="shortcut-item"><span class="shortcut-key">Ctrl+Shift+H</span> Toggle Tooltips</div>
+    <div class="shortcut-item"><span class="shortcut-key">Esc</span> Cancel</div>
+  `
+  body.appendChild(shortcutsHelp)
 
   // ─── Notes Pane ────────────────────────────────────────────────
   const notesPane = document.createElement("div");
@@ -954,11 +985,11 @@
 
   // ─── Collapse / Expand ─────────────────────────────────────────────────
   fab.addEventListener("click", expandPanel)
-  handle.querySelector("#ds-minimize").addEventListener("click", collapsePanel)
+  handleEl.querySelector("#ds-minimize").addEventListener("click", collapsePanel)
 
   // ─── Dragging ──────────────────────────────────────────────────
   let dragOffsetX = 0, dragOffsetY = 0, dragging = false
-  handle.addEventListener("mousedown", (e) => {
+  handleEl.addEventListener("mousedown", (e) => {
     dragging = true
     const rect = panel.getBoundingClientRect()
     dragOffsetX = e.clientX - rect.left
@@ -1099,7 +1130,7 @@
   function promptNoteFromCapture(title, body, type) {
     panel.querySelector("#ds-note-title").value = title
     panel.querySelector("#ds-note-body").value = body
-    panel.querySelector("#ds-note-type").value = type || "observation"
+    panel.querySelector("#ds-note-type").value = type || settings.default_note_type || "observation"
     switchTab("notes")
   }
 
@@ -1429,13 +1460,6 @@
     })
   })
 
-  // Load search history from settings
-  sendToBackground("GET_SETTINGS").then((resp) => {
-    if (resp?.success && resp.data?.search_history) {
-      state.searchHistory = resp.data.search_history
-    }
-  })
-
   // ─── Keyboard Shortcuts ─────────────────────────────────────────────────
   const SHORTCUTS = {
     "ctrl+shift+n": { action: "new-note", label: "New Note" },
@@ -1447,6 +1471,7 @@
   }
 
   function handleShortcut(e) {
+    if (!settings.keyboard_shortcuts) return
     const key = []
     if (e.ctrlKey || e.metaKey) key.push("ctrl")
     if (e.shiftKey) key.push("shift")
@@ -1504,6 +1529,7 @@
 
   // Toast notification helper
   function showToast(message, type = "info") {
+    if (!settings.show_toasts) return
     const toast = document.createElement("div")
     toast.className = "ds-toast ds-toast-" + type
     toast.textContent = message
@@ -1544,7 +1570,35 @@
   }
 
   // ─── Init ──────────────────────────────────────────────────────
-  loadNotes()
-  initSearchPane()
-  origConsole.log("[DevScribe] Content script loaded - Phase 2 features active")
+  loadSettings().then(() => {
+    // Apply buffer limits
+    MAX_CONSOLE = settings.max_console_entries || 100;
+    MAX_NETWORK = settings.max_network_entries || 50;
+
+    // Apply tooltip setting
+    state.tooltipEnabled = settings.tooltip_enabled !== false;
+
+    // Apply search history
+    if (settings.search_history) {
+      state.searchHistory = settings.search_history;
+    }
+
+    // Apply panel state
+    if (settings.panel_auto_open && !settings.panel_minimized) {
+      expandPanel();
+    } else {
+      collapsePanel();
+    }
+
+    // Apply default note type
+    const noteTypeSelect = panel.querySelector("#ds-note-type");
+    if (noteTypeSelect && settings.default_note_type) {
+      noteTypeSelect.value = settings.default_note_type;
+    }
+
+    // Load notes and initialize search
+    loadNotes();
+    initSearchPane();
+    origConsole.log("[DevScribe] Content script loaded - Phase 2 features active (settings wired)")
+  })
 })()

@@ -6,6 +6,9 @@ const KEYS = {
 };
 
 const DEFAULT_SETTINGS = {
+  tooltip_enabled: true,
+  search_history: [],
+  keyboard_shortcuts: true,
   capture_console: true,
   capture_network: false,
   show_toasts: true,
@@ -78,6 +81,8 @@ async function populateUI() {
   document.getElementById("capConsole").checked = settings.capture_console;
   document.getElementById("capNetwork").checked = settings.capture_network;
   document.getElementById("capToasts").checked = settings.show_toasts;
+  document.getElementById("capTooltip").checked = settings.tooltip_enabled;
+  document.getElementById("capShortcuts").checked = settings.keyboard_shortcuts;
 
   // Capture ranges
   const consoleMax = document.getElementById("capConsoleMax");
@@ -113,6 +118,8 @@ const debouncedSave = debounce(async () => {
     capture_console: document.getElementById("capConsole").checked,
     capture_network: document.getElementById("capNetwork").checked,
     show_toasts: document.getElementById("capToasts").checked,
+    tooltip_enabled: document.getElementById("capTooltip").checked,
+    keyboard_shortcuts: document.getElementById("capShortcuts").checked,
     max_console_entries: parseInt(document.getElementById("capConsoleMax").value),
     max_network_entries: parseInt(document.getElementById("capNetworkMax").value),
     panel_auto_open: document.getElementById("panelAutoOpen").checked,
@@ -126,7 +133,7 @@ const debouncedSave = debounce(async () => {
 
 function attachAutoSave() {
   const ids = [
-    "capConsole", "capNetwork", "capToasts",
+    "capConsole", "capNetwork", "capToasts", "capTooltip", "capShortcuts",
     "capConsoleMax", "capNetworkMax",
     "panelAutoOpen", "panelMinimized", "defaultNoteType",
   ];

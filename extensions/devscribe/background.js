@@ -9,6 +9,15 @@ const DEFAULT_SETTINGS = {
   tooltip_enabled: true,
   search_history: [],
   keyboard_shortcuts: true,
+  capture_console: true,
+  capture_network: false,
+  show_toasts: true,
+  max_console_entries: 100,
+  max_network_entries: 50,
+  panel_auto_open: true,
+  panel_minimized: false,
+  default_note_type: "observation",
+  default_labels: "",
 };
 
 function uuid() {
@@ -87,7 +96,9 @@ async function handleCreateGithubIssue(noteId) {
   const note = notes.find((n) => n.id === noteId);
   if (!note) return { success: false, error: "Note not found" };
 
-  const labels = [note.type];
+  const settings = await getSettings();
+  const configuredLabels = (settings.default_labels || "").split(",").map(l => l.trim()).filter(Boolean);
+  const labels = [...new Set([note.type, ...configuredLabels])];
   const issueBody = `${note.body}\n\n---\n**Type:** ${note.type}\n**Page:** ${note.page}\n**Created:** ${note.created_at}\n${note.tags.length ? `**Tags:** ${note.tags.join(", ")}\n` : ""}---\n_Captured with DevScribe_`;
 
   try {
