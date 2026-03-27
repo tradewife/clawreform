@@ -1,0 +1,228 @@
+{
+  "extName": {
+    "message": "ClawPrompt - AI Prompt Templates",
+    "description": "Manage and insert AI prompt templates into any text field. Perfect for Claude, ChatGPT, and other AI assistants."
+  },
+  "extDescription": {
+    "message": "Create, manage, and insert reusable prompt templates into any text field on the web. Boost your productivity with organized, searchable templates for coding, writing, analysis, and more."
+  },
+  "browser_action": {
+    "message": "Open ClawPrompt"
+  },
+  "contextMenuItemInsertTemplate": {
+    "message": "Insert ClawPrompt Template"
+  },
+  "optionsTitle": {
+    "message": "ClawPrompt Settings"
+  },
+  "searchPlaceholder": {
+    "message": "Search templates..."
+  },
+  "newTemplateTitle": {
+    "message": "New Template"
+  },
+  "editTemplateTitle": {
+    "message": "Edit Template"
+  },
+  "saveButton": {
+    "message": "Save"
+  },
+  "cancelButton": {
+    "message": "Cancel"
+  },
+  "deleteButton": {
+    "message": "Delete"
+  },
+  "duplicateButton": {
+    "message": "Duplicate"
+  },
+  "insertButton": {
+    "message": "Insert"
+  },
+  "copyButton": {
+    "message": "Copy"
+  },
+  "exportButton": {
+    "message": "Export"
+  },
+  "importButton": {
+    "message": "Import"
+  },
+  "templateNameLabel": {
+    "message": "Name"
+  },
+  "templateCategoryLabel": {
+    "message": "Category"
+  },
+  "templateTagsLabel": {
+    "message": "Tags"
+  },
+  "templateContentLabel": {
+    "message": "Content"
+  },
+  "templateShortcutLabel": {
+    "message": "Shortcut"
+  },
+  "templatesSection": {
+    "message": "Templates"
+  },
+  "categoriesSection": {
+    "message": "Categories"
+  },
+  "importExportSection": {
+    "message": "Import / Export"
+  },
+  "settingsSection": {
+    "message": "Settings"
+  },
+  "allTemplatesTab": {
+    "message": "All"
+  },
+  "favoritesTab": {
+    "message": "Favorites"
+  },
+  "recentTab": {
+    "message": "Recent"
+  },
+  "noTemplatesFound": {
+    "message": "No templates found"
+  },
+  "createFirstTemplate": {
+    "message": "Create your first template"
+  },
+  "templateInserted": {
+    "message": "Template inserted!"
+  },
+  "templateSaved": {
+    "message": "Template saved!"
+  },
+  "templateDeleted": {
+    "message": "Template deleted"
+  },
+  "templateDuplicated": {
+    "message": "Template duplicated!"
+  },
+  "copiedToClipboard": {
+    "message": "Copied to clipboard!"
+  },
+  "templatesExported": {
+    "message": "Templates exported!"
+  },
+  "templatesImported": {
+    "message": "Templates imported!"
+  },
+  "deleteAllTemplates": {
+    "message": "Delete All Templates"
+  },
+  "loadDefaultTemplates": {
+    "message": "Load Default Templates"
+  },
+  "confirmDeleteAll": {
+    "message": "Are you sure you want to delete all templates? This cannot be undone."
+  },
+  "generalCategory": {
+    "message": "General"
+  },
+  "codingCategory": {
+    "message": "Coding"
+  },
+  "writingCategory": {
+    "message": "Writing"
+  },
+  "analysisCategory": {
+    "message": "Analysis"
+  },
+  "creativeCategory": {
+    "message": "Creative"
+  },
+  "businessCategory": {
+    "message": "Business"
+  },
+  "customCategory": {
+    "message": "Custom"
+  },
+  "themeLabel": {
+    "message": "Theme"
+  },
+  "darkTheme": {
+    "message": "Dark"
+  },
+  "lightTheme": {
+    "message": "Light"
+  },
+  "fontSizeLabel": {
+    "message": "Font Size"
+  },
+  "smallFont": {
+    "message": "Small"
+  },
+  "mediumFont": {
+    "message": "Medium"
+  },
+  "largeFont": {
+    "message": "Large"
+  },
+  "showNotificationsLabel": {
+    "message": "Show Notifications"
+  },
+  "autoSaveLabel": {
+    "message": "Auto Save"
+  },
+  "defaultCategoryLabel": {
+    "message": "Default Category"
+  },
+  "insertDelayLabel": {
+    "message": "Insert Delay (ms)"
+  },
+  "addToFavorites": {
+    "message": "Add to Favorites"
+  },
+  "removeFromFavorites": {
+    "message": "Remove from Favorites"
+  },
+  "editAction": {
+    "message": "Edit"
+  },
+  "deleteAction": {
+    "message": "Delete"
+  },
+  "nameRequired": {
+    "message": "Name is required"
+  },
+  "contentRequired": {
+    "message": "Content is required"
+  },
+  "nameAndContentRequired": {
+    "message": "Name and content are required"
+  },
+  "noRecentTemplates": {
+    "message": "No recent templates"
+  },
+  "pleaseFocusOnTextField": {
+    "message": "Please focus on a text field first"
+  },
+  "insertLastUsed": {
+    "message": "Insert Last Used"
+  },
+  "quickInsert": {
+    "message": "Quick Insert"
+  },
+  "templateVariablesHint": {
+    "message": "Use {{cursor}} for cursor position, {{selected}} for selected text"
+  },
+  "tagsHint": {
+    "message": "Comma separated"
+  },
+  "shortcutHint": {
+    "message": "e.g., Ctrl+Shift+R"
+  },
+  "addCategory": {
+    "message": "Add Category"
+  },
+  "categoryName": {
+    "message": "Category Name"
+  },
+  "categoryIcon": {
+    "message": "Icon (emoji or URL)"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "templates": [
+    {
+      "id": "tpl_code_review",
+      "name": "Code Review",
+      "category": "coding",
+      "tags": ["code", "review", "quality"],
+      "content": "Please review the following code for:\n\n- Code quality and readability\n- Potential bugs or edge cases\n- Performance considerations\n- Security concerns\n\nProvide specific feedback and suggestions for improvements.",
+      "favorite": true,
+      "createdAt": 1709825600000
+    },
+    {
+      "id": "tpl_explain_code",
+      "name": "Explain Code",
+      "category": "coding",
+      "tags": ["explain", "understand", "code"],
+      "content": "Please explain the following code:\n\nFocus on:\n- What it does and why\n- How it works\n- Any design patterns used\n- Potential edge cases\n\nProvide a clear, step-by-step explanation suitable for someone unfamiliar with the codebase.",
+      "favorite": true,
+      "createdAt": 1709825600000
+    },
+    {
+      "id": "tpl_refactor",
+      "name": "Refactor Request",
+      "category": "coding",
+      "tags": ["refactor", "clean", "improve"],
+      "content": "Please refactor the following code to improve:\n\n- Readability\n- Maintainability\n- Performance\n- Reduce complexity\n\nKeep the same functionality while making the code cleaner and more efficient.\n\nInclude comments explaining your changes.",
+      "favorite": false,
+      "createdAt": 1709825600000
+    },
+    {
+      "id": "tpl_bug_report",
+      "name": "Bug Report",
+      "category": "coding",
+      "tags": ["bug", "issue", "debug"],
+      "content": "## Bug Description\nA clear description of the bug.\n\n## Steps to Reproduce\n1. First step\n2. Second step\n3. Third step\n\n## Expected Behavior\nWhat should happen?\n\n## Actual Behavior\nWhat happens instead?\n\n## Environment\n- Browser: \n- OS: \n- Device:\n\n## Screenshots\nIf applicable, add screenshots to help explain the issue.",
+      "favorite": false,
+      "createdAt": 1709825600000
+    },
+    {
+      "id": "tpl_git_commit",
+      "name": "Git Commit Message",
+      "category": "coding",
+      "tags": ["git", "commit", "message"],
+      "content": "Write a git commit message for these changes:\n\n{{selected}}\n\nFollow conventional commits format:\n- feat: for new features\n- fix: for bug fixes\n- docs: for documentation\n- style: for formatting\n- refactor: for code restructuring\n- test: for adding tests\n- chore: for maintenance",
+      "favorite": false,
+      "createdAt": 1709825600000
+    },
+    {
+      "id": "tpl_meeting_summary",
+      "name": "Meeting Summary",
+      "category": "business",
+      "tags": ["meeting", "summary", "notes"],
+      "content": "# Meeting Summary\n\n**Date:** {{date}}\n**Attendees:** {{attendees}}\n\n## Key Points\n1. First point\n2. Second point\n3. Third point\n\n## Action Items\n- [ ] Action item 1\n- [ ] Action item 2\n\n## Next Steps\n- [ ] Next step 1\n- [ ] Next step 2",
+      "favorite": false,
+      "createdAt": 1709825600000
+    },
+    {
+      "id": "tpl_email",
+      "name": "Professional Email",
+      "category": "writing",
+      "tags": ["email", "professional", "communication"],
+      "content": "Subject: {{subject}}\n\nDear {{name}},\n\n{{cursor}}\n\nBest regards,\n{{signature}}",
+      "favorite": false,
+      "createdAt": 1709825600000
+    },
+    {
+      "id": "tpl_data_analysis",
+      "name": "Data Analysis",
+      "category": "analysis",
+      "tags": ["data", "analysis", "report"],
+      "content": "Please analyze the following data:\n\nFocus on:\n- Key trends and patterns\n- Anomalies\n- Insights\n- Recommendations\n\nProvide a summary of findings with actionable recommendations.",
+      "favorite": true,
+      "createdAt": 1709825600000
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <rect width="128" height="128" rx="24" fill="#6366f1"/>
+  <g fill="#fff">
+    <!-- Abstract claw/prompt icon -->
+    <circle cx="64" cy="48" r="32" stroke="#fff" stroke-width="4" fill="none"/>
+    <path d="M64 16 L64 32 M48 64 L64 96 M80 64 M96 64" stroke="#fff" stroke-width="4" fill="none"/>
+    <path d="M64 32 L32 64 L64 96 L96 64 L64 112 L32 64 L64 32" stroke="#fff" stroke-width="4" fill="none"/>
+    <path d="M64 64 L48 80 L64 112 L80 80 L64 64 L64 80 L48 64 L64 64 L80 48 L64 64 L64 80 L80 80 L64 112 L80 96 L64 96 L64 112 L64 112 L80 96 L64 80" stroke="#fff" stroke-width="3" fill="none"/>
+    <!-- Text lines -->
+    <line x1="40" y1="48" x2="88" y2="48" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    <line x1="40" y1="64" x2="88" y2="64" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    <line x1="40" y1="80" x2="88" y2="80" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>
