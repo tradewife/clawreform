@@ -1,0 +1,49 @@
+{
+  "name": "ClawPrompt",
+  "version": "1.0.0",
+  "description": "Manage and insert AI prompt templates into any text field. Perfect for Claude, ChatGPT, and other AI assistants.",
+  "author": {
+    "name": "aegntic.ai",
+    "email": "support@aegntic.ai",
+    "url": "https://aegntic.ai"
+  },
+  "homepage_url": "https://github.com/aegntic/clawreform",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aegntic/clawreform"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "prompts",
+    "templates",
+    "productivity",
+    "claude",
+    "chatgpt",
+    "text-expansion",
+    "developer-tools"
+  ],
+  "category": "Developer Tools",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "screenshots": [
+    {
+      "src": "screenshots/popup.png",
+      "type": "image/png",
+      "sizes": "1280x800",
+      "label": "ClawPrompt popup interface"
+    },
+    {
+      "src": "screenshots/options.png",
+      "type": "image/png",
+      "sizes": "1280x800",
+      "label": "ClawPrompt options page"
+    }
+  ],
+  "default_locale": "en",
+  "locales": ["en"],
+  "minimum_chrome_version": "88"
+}

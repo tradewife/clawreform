@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClawPrompt Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div id="app" class="options-container">
+    <!-- Header -->
+    <header class="options-header">
+      <div class="header-content">
+        <img src="../icons/icon32.png" alt="ClawPrompt" class="logo">
+        <div class="header-text">
+          <h1>ClawPrompt Settings</h1>
+          <p class="version">v1.0.0</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="options-content">
+      <!-- Sidebar Navigation -->
+      <nav class="sidebar">
+        <a href="#" class="nav-item active" data-section="templates">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          Templates
+        </a>
+        <a href="#" class="nav-item" data-section="categories">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.3l1.29-4.17a3.42 3.42 3.42 0 1.29-1.29.3.9L3.29 4a17a3.42 3.42 3.42 0 1.29 1.29 1.29h7.42l.9.9.9 1.29-1.29.3.9L17 4.17a3.42 3.42 3.42 0 1.29 1.29 1.29z"></path>
+          </svg>
+          Categories
+        </a>
+        <a href="#" class="nav-item" data-section="import-export">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          Import / Export
+        </a>
+        <a href="#" class="nav-item" data-section="settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0-9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Settings
+        </a>
+      </nav>
+
+      <!-- Content Panels -->
+      <div class="main-content">
+        <!-- Templates Section -->
+        <section id="section-templates" class="section active">
+          <div class="section-header">
+            <h2>Template Manager</h2>
+            <button class="btn btn-primary" id="btn-new-template">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              New Template
+            </button>
+          </div>
+
+          <!-- Search & Filter Bar -->
+          <div class="toolbar">
+            <div class="search-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="search-templates" placeholder="Search templates...">
+            </div>
+            <div class="filter-group">
+              <select id="filter-category">
+                <option value="">All Categories</option>
+                <option value="coding">Coding</option>
+                <option value="writing">Writing</option>
+                <option value="analysis">Analysis</option>
+                <option value="creative">Creative</option>
+                <option value="business">Business</option>
+                <option value="general">General</option>
+              </select>
+              <select id="sort-templates">
+                <option value="name">Sort by Name</option>
+                <option value="recent">Sort by Recent</option>
+                <option value="used">Sort by Most Used</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Templates Table -->
+          <div class="templates-table-container">
+            <table class="templates-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Tags</th>
+                  <th>Uses</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="templates-table-body">
+                <!-- Templates will be rendered here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="section-categories" class="section hidden">
+          <div class="section-header">
+            <h2>Categories</h2>
+          </div>
+
+          <div class="categories-grid" id="categories-grid">
+            <!-- Categories will be rendered here -->
+          </div>
+
+          <div class="category-editor">
+            <h3>Add Custom Category</h3>
+            <form id="category-form" class="inline-form">
+              <input type="text" id="new-category-name" placeholder="Category name">
+              <input type="text" id="new-category-icon" placeholder="Icon (emoji or URL)">
+              <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Import/Export Section -->
+        <section id="section-import-export" class="section hidden">
+          <div class="section-header">
+            <h2>Import / Export Templates</h2>
+          </div>
+
+          <div class="import-export-grid">
+            <!-- Export Card -->
+            <div class="card">
+              <div class="card-header">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <h3>Export Templates</h3>
+              </div>
+              <p>Download all your templates as a JSON file for backup or sharing.</p>
+              <div class="export-options">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="export-include-usage">
+                  Include usage statistics
+                </label>
+              </div>
+              <button class="btn btn-primary" id="btn-export-all">Export All Templates</button>
+            </div>
+
+            <!-- Import Card -->
+            <div class="card">
+              <div class="card-header">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <h3>Import Templates</h3>
+              </div>
+              <p>Import templates from a JSON file. Existing templates will be preserved.</p>
+              <div class="import-options">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="import-replace">
+                  Replace existing with same ID
+                </label>
+              </div>
+              <input type="file" id="import-file" accept=".json" class="file-input">
+              <label for="import-file" class="btn btn-primary">Choose File</label>
+            </div>
+          </div>
+
+          <!-- Bulk Operations -->
+          <div class="bulk-operations">
+            <h3>Bulk Operations</h3>
+            <div class="bulk-actions">
+              <button class="btn" id="btn-delete-all">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete All Templates
+              </button>
+              <button class="btn" id="btn-load-defaults">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Load Default Templates
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="section-settings" class="section hidden">
+          <div class="section-header">
+            <h2>Settings</h2>
+          </div>
+
+          <div class="settings-form">
+            <!-- General Settings -->
+            <div class="settings-group">
+              <h3>General</h3>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Default Category</label>
+                  <p>Category for new templates</p>
+                </div>
+                <select id="setting-default-category">
+                  <option value="general">General</option>
+                  <option value="coding">Coding</option>
+                  <option value="writing">Writing</option>
+                  <option value="analysis">Analysis</option>
+                  <option value="creative">Creative</option>
+                  <option value="business">Business</option>
+                </select>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Auto-save drafts</label>
+                  <p>Automatically save template drafts</p>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-auto-save" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Insert Delay (ms)</label>
+                  <p>Delay before inserting template</p>
+                </div>
+                <input type="number" id="setting-insert-delay" value="100" min="0" max="1000">
+              </div>
+            </div>
+
+            <!-- Appearance Settings -->
+            <div class="settings-group">
+              <h3>Appearance</h3>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Theme</label>
+                  <p>Choose color theme</p>
+                </div>
+                <select id="setting-theme">
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
+                  <option value="system">System</option>
+                </select>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Font Size</label>
+                  <p>Base font size</p>
+                </div>
+                <select id="setting-font-size">
+                  <option value="small">Small</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="large">Large</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Notifications Settings -->
+            <div class="settings-group">
+              <h3>Notifications</h3>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Show notifications</label>
+                  <p>Show toast notifications</p>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-show-notifications" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="settings-group">
+              <h3>Data</h3>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Clear Recent History</label>
+                  <p>Clear recently used templates list</p>
+                </div>
+                <button class="btn btn-sm" id="btn-clear-recent">Clear</button>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-info">
+                  <label>Reset All Settings</label>
+                  <p>Reset to default settings</p>
+                </div>
+                <button class="btn btn-sm btn-danger" id="btn-reset-settings">Reset</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Template Editor Modal -->
+    <div id="editor-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h2 id="editor-title">New Template</h2>
+          <button class="btn-close" id="btn-close-editor">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="template-form" class="template-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="template-name">Name *</label>
+                <input type="text" id="template-name" required>
+              </div>
+              <div class="form-group">
+                <label for="template-category">Category *</label>
+                <select id="template-category" required>
+                  <option value="general">General</option>
+                  <option value="coding">Coding</option>
+                  <option value="writing">Writing</option>
+                  <option value="analysis">Analysis</option>
+                  <option value="creative">Creative</option>
+                  <option value="business">Business</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="template-tags">Tags</label>
+                <input type="text" id="template-tags" placeholder="code, review, bugs">
+              </div>
+              <div class="form-group">
+                <label for="template-shortcut">Shortcut</label>
+                <input type="text" id="template-shortcut" placeholder="Ctrl+Shift+R">
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="template-content">Content *</label>
+              <div class="content-hint">
+                <span>Use <code>{{cursor}}</code> to set cursor position</span>
+                <span>Use <code>{{selected}}</code> to insert selected text</span>
+              </div>
+              <textarea id="template-content" rows="12" required></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="template-description">Description</label>
+              <textarea id="template-description" rows="2" placeholder="Brief description of this template..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" id="btn-cancel-editor">Cancel</button>
+          <button class="btn btn-primary" id="btn-save-template">Save Template</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content modal-small">
+        <div class="modal-header">
+          <h2 id="confirm-title">Confirm</h2>
+        </div>
+        <div class="modal-body">
+          <p id="confirm-message">Are you sure?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" id="btn-confirm-cancel">Cancel</button>
+          <button class="btn btn-danger" id="btn-confirm-ok">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <script src="options.js" type="module"></script>
+</body>
+</html>
