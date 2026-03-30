@@ -26,6 +26,7 @@
 use crate::host_functions;
 use crate::kernel_handle::KernelHandle;
 use clawreform_types::capability::Capability;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use tracing::debug;
 use wasmtime::*;
@@ -65,6 +66,8 @@ pub struct GuestState {
     pub agent_id: String,
     /// Tokio runtime handle for async operations in sync host functions.
     pub tokio_handle: tokio::runtime::Handle,
+    /// Resource limiter for enforcing memory caps.
+    pub store_limits: StoreLimits,
 }
 
 /// Result of executing a WASM module.
@@ -156,7 +159,10 @@ impl WasmSandbox {
         let module = Module::new(engine, wasm_bytes)
             .map_err(|e| SandboxError::Compilation(e.to_string()))?;
 
-        // Create store with guest state
+        // Create store with guest state and resource limits
+        let store_limits = StoreLimitsBuilder::new()
+            .memory_size(config.max_memory_bytes)
+            .build();
         let mut store = Store::new(
             engine,
             GuestState {
@@ -164,8 +170,10 @@ impl WasmSandbox {
                 kernel,
                 agent_id: agent_id.to_string(),
                 tokio_handle,
+                store_limits,
             },
         );
+        store.limiter(|state| &mut state.store_limits);
 
         // Set fuel budget (deterministic metering)
         if config.fuel_limit > 0 {
@@ -178,9 +186,13 @@ impl WasmSandbox {
         store.set_epoch_deadline(1);
         let engine_clone = engine.clone();
         let timeout = config.timeout_secs.unwrap_or(30);
+        let cancelled = Arc::new(AtomicBool::new(false));
+        let cancelled_clone = Arc::clone(&cancelled);
         let _watchdog = std::thread::spawn(move || {
             std::thread::sleep(std::time::Duration::from_secs(timeout));
-            engine_clone.increment_epoch();
+            if !cancelled_clone.load(Ordering::Relaxed) {
+                engine_clone.increment_epoch();
+            }
         });
 
         // Build linker with host function imports
@@ -229,19 +241,25 @@ impl WasmSandbox {
 
         // Call guest execute
         let packed = match execute_fn.call(&mut store, (input_ptr, input_bytes.len() as i32)) {
-            Ok(v) => v,
+            Ok(v) => {
+                cancelled.store(true, Ordering::Relaxed);
+                v
+            }
             Err(e) => {
                 // Check for fuel exhaustion via trap code
                 if let Some(Trap::OutOfFuel) = e.downcast_ref::<Trap>() {
+                    cancelled.store(true, Ordering::Relaxed);
                     return Err(SandboxError::FuelExhausted);
                 }
                 // Check for epoch deadline (wall-clock timeout)
                 if let Some(Trap::Interrupt) = e.downcast_ref::<Trap>() {
+                    // Do NOT cancel here — this IS the timeout firing
                     return Err(SandboxError::Execution(format!(
                         "WASM execution timed out after {}s (epoch interrupt)",
                         timeout
                     )));
                 }
+                cancelled.store(true, Ordering::Relaxed);
                 return Err(SandboxError::Execution(e.to_string()));
             }
         };

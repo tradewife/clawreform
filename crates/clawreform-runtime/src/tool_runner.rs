@@ -133,7 +133,7 @@ pub async fn execute_tool(
 
     // Approval gate: check if this tool requires human approval before execution
     if let Some(kh) = kernel {
-        if kh.requires_approval(tool_name) {
+        if kh.requires_approval(tool_name).await {
             let agent_id_str = caller_agent_id.unwrap_or("unknown");
             let summary = format!(
                 "{}: {}",

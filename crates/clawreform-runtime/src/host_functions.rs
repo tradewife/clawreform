@@ -501,6 +501,9 @@ mod tests {
             kernel: None,
             agent_id: "test-agent".to_string(),
             tokio_handle: tokio::runtime::Handle::current(),
+            store_limits: wasmtime::StoreLimitsBuilder::new()
+                .memory_size(16 * 1024 * 1024)
+                .build(),
         }
     }
 

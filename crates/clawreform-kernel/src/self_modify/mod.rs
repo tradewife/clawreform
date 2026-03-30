@@ -88,8 +88,13 @@ impl SelfModifier {
         state.current_backup = Some(backup_id.clone());
         drop(state);
 
-        // 2. Apply changes
-        modifier::apply_plan(&plan, &self.source_dir)?;
+        // 2. Apply changes — rollback on partial failure
+        if let Err(e) = modifier::apply_plan(&plan, &self.source_dir) {
+            if self.config.auto_rollback {
+                let _ = backup::restore_backup(&self.backup_dir, &backup_id, &self.source_dir);
+            }
+            return Err(e);
+        }
 
         // 3. Validate
         match validate::run_validation(&self.source_dir).await {

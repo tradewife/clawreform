@@ -117,7 +117,7 @@ pub trait KernelHandle: Send + Sync {
     }
 
     /// Check if a tool requires approval based on current policy.
-    fn requires_approval(&self, tool_name: &str) -> bool {
+    async fn requires_approval(&self, tool_name: &str) -> bool {
         let _ = tool_name;
         false
     }

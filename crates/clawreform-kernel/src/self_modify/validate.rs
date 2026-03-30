@@ -2,7 +2,7 @@
 
 use super::types::*;
 use std::path::Path;
-use std::process::Command;
+use tokio::process::Command;
 use tracing::{info, warn};
 
 /// Run full validation on the codebase
@@ -47,7 +47,8 @@ async fn run_build(source_dir: &Path, errors: &mut Vec<String>) -> bool {
     let output = Command::new("cargo")
         .args(["build", "--workspace", "--lib"])
         .current_dir(source_dir)
-        .output();
+        .output()
+        .await;
 
     match output {
         Ok(output) if output.status.success() => {
@@ -73,7 +74,8 @@ async fn run_tests(source_dir: &Path, errors: &mut Vec<String>) -> bool {
     let output = Command::new("cargo")
         .args(["test", "--workspace"])
         .current_dir(source_dir)
-        .output();
+        .output()
+        .await;
 
     match output {
         Ok(output) if output.status.success() => {
@@ -106,7 +108,8 @@ async fn run_clippy(source_dir: &Path, warnings: &mut Vec<String>) -> bool {
             "warnings",
         ])
         .current_dir(source_dir)
-        .output();
+        .output()
+        .await;
 
     match output {
         Ok(output) if output.status.success() => {

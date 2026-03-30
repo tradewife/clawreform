@@ -7770,7 +7770,7 @@ pub async fn create_approval(
 ) -> impl IntoResponse {
     use clawreform_types::approval::{ApprovalRequest, RiskLevel};
 
-    let policy = state.kernel.approval_manager.policy();
+    let policy = state.kernel.approval_manager.policy().await;
     let id = uuid::Uuid::new_v4();
     let approval_req = ApprovalRequest {
         id,

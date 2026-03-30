@@ -3599,8 +3599,11 @@ impl ClawReformKernel {
             match action {
                 HotAction::UpdateApprovalPolicy => {
                     info!("Hot-reload: updating approval policy");
-                    self.approval_manager
-                        .update_policy(new_config.approval.clone());
+                    let new_approval = new_config.approval.clone();
+                    tokio::task::block_in_place(|| {
+                        tokio::runtime::Handle::current()
+                            .block_on(self.approval_manager.update_policy(new_approval))
+                    });
                 }
                 HotAction::UpdateCronConfig => {
                     info!(
@@ -5492,8 +5495,8 @@ impl KernelHandle for ClawReformKernel {
         self.deactivate_hand(uuid).map_err(|e| format!("{e}"))
     }
 
-    fn requires_approval(&self, tool_name: &str) -> bool {
-        self.approval_manager.requires_approval(tool_name)
+    async fn requires_approval(&self, tool_name: &str) -> bool {
+        self.approval_manager.requires_approval(tool_name).await
     }
 
     async fn request_approval(
@@ -5515,7 +5518,7 @@ impl KernelHandle for ClawReformKernel {
             }
         }
 
-        let policy = self.approval_manager.policy();
+        let policy = self.approval_manager.policy().await;
         let req = TypedRequest {
             id: uuid::Uuid::new_v4(),
             agent_id: agent_id.to_string(),

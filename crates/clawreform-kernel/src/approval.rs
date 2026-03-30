@@ -14,7 +14,7 @@ const MAX_PENDING_PER_AGENT: usize = 5;
 /// Manages approval requests with oneshot channels for blocking resolution.
 pub struct ApprovalManager {
     pending: DashMap<Uuid, PendingRequest>,
-    policy: std::sync::RwLock<ApprovalPolicy>,
+    policy: tokio::sync::RwLock<ApprovalPolicy>,
 }
 
 struct PendingRequest {
@@ -26,13 +26,13 @@ impl ApprovalManager {
     pub fn new(policy: ApprovalPolicy) -> Self {
         Self {
             pending: DashMap::new(),
-            policy: std::sync::RwLock::new(policy),
+            policy: tokio::sync::RwLock::new(policy),
         }
     }
 
     /// Check if a tool requires approval based on current policy.
-    pub fn requires_approval(&self, tool_name: &str) -> bool {
-        let policy = self.policy.read().unwrap_or_else(|e| e.into_inner());
+    pub async fn requires_approval(&self, tool_name: &str) -> bool {
+        let policy = self.policy.read().await;
         policy.require_approval.iter().any(|t| t == tool_name)
     }
 
@@ -114,16 +114,13 @@ impl ApprovalManager {
     }
 
     /// Update the approval policy (for hot-reload).
-    pub fn update_policy(&self, policy: ApprovalPolicy) {
-        *self.policy.write().unwrap_or_else(|e| e.into_inner()) = policy;
+    pub async fn update_policy(&self, policy: ApprovalPolicy) {
+        *self.policy.write().await = policy;
     }
 
     /// Get a copy of the current policy.
-    pub fn policy(&self) -> ApprovalPolicy {
-        self.policy
-            .read()
-            .unwrap_or_else(|e| e.into_inner())
-            .clone()
+    pub async fn policy(&self) -> ApprovalPolicy {
+        self.policy.read().await.clone()
     }
 
     /// Classify the risk level of a tool invocation.
@@ -168,25 +165,25 @@ mod tests {
     // requires_approval
     // -----------------------------------------------------------------------
 
-    #[test]
-    fn test_requires_approval_default() {
+    #[tokio::test]
+    async fn test_requires_approval_default() {
         let mgr = default_manager();
-        assert!(mgr.requires_approval("shell_exec"));
-        assert!(!mgr.requires_approval("file_read"));
+        assert!(mgr.requires_approval("shell_exec").await);
+        assert!(!mgr.requires_approval("file_read").await);
     }
 
-    #[test]
-    fn test_requires_approval_custom_policy() {
+    #[tokio::test]
+    async fn test_requires_approval_custom_policy() {
         let policy = ApprovalPolicy {
             require_approval: vec!["file_write".to_string(), "file_delete".to_string()],
             timeout_secs: 30,
             auto_approve_autonomous: false,
         };
         let mgr = ApprovalManager::new(policy);
-        assert!(mgr.requires_approval("file_write"));
-        assert!(mgr.requires_approval("file_delete"));
-        assert!(!mgr.requires_approval("shell_exec"));
-        assert!(!mgr.requires_approval("file_read"));
+        assert!(mgr.requires_approval("file_write").await);
+        assert!(mgr.requires_approval("file_delete").await);
+        assert!(!mgr.requires_approval("shell_exec").await);
+        assert!(!mgr.requires_approval("file_read").await);
     }
 
     // -----------------------------------------------------------------------
@@ -248,23 +245,23 @@ mod tests {
     // update_policy
     // -----------------------------------------------------------------------
 
-    #[test]
-    fn test_update_policy() {
+    #[tokio::test]
+    async fn test_update_policy() {
         let mgr = default_manager();
-        assert!(mgr.requires_approval("shell_exec"));
-        assert!(!mgr.requires_approval("file_write"));
+        assert!(mgr.requires_approval("shell_exec").await);
+        assert!(!mgr.requires_approval("file_write").await);
 
         let new_policy = ApprovalPolicy {
             require_approval: vec!["file_write".to_string()],
             timeout_secs: 120,
             auto_approve_autonomous: true,
         };
-        mgr.update_policy(new_policy);
+        mgr.update_policy(new_policy).await;
 
-        assert!(!mgr.requires_approval("shell_exec"));
-        assert!(mgr.requires_approval("file_write"));
+        assert!(!mgr.requires_approval("shell_exec").await);
+        assert!(mgr.requires_approval("file_write").await);
 
-        let policy = mgr.policy();
+        let policy = mgr.policy().await;
         assert_eq!(policy.timeout_secs, 120);
         assert!(policy.auto_approve_autonomous);
     }
@@ -392,10 +389,10 @@ mod tests {
     // policy defaults
     // -----------------------------------------------------------------------
 
-    #[test]
-    fn test_policy_defaults() {
+    #[tokio::test]
+    async fn test_policy_defaults() {
         let mgr = default_manager();
-        let policy = mgr.policy();
+        let policy = mgr.policy().await;
         assert_eq!(policy.require_approval, vec!["shell_exec".to_string()]);
         assert_eq!(policy.timeout_secs, 60);
         assert!(!policy.auto_approve_autonomous);
