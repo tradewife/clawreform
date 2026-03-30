@@ -11,7 +11,6 @@ members = [
     "crates/clawreform-channels",
     "crates/clawreform-migrate",
     "crates/clawreform-skills",
-    "crates/clawreform-desktop",
     "crates/clawreform-hands",
     "crates/clawreform-extensions",
     "xtask",

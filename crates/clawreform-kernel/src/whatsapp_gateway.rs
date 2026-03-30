@@ -268,6 +268,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[allow(clippy::const_is_empty)]
     fn test_embedded_files_not_empty() {
         assert!(!GATEWAY_INDEX_JS.is_empty());
         assert!(!GATEWAY_PACKAGE_JSON.is_empty());

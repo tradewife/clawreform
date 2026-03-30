@@ -3,7 +3,6 @@
 use super::types::*;
 use std::fs;
 use std::path::Path;
-use std::str::FromStr;
 use tracing::info;
 
 /// Apply a modification plan

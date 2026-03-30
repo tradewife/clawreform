@@ -3,19 +3,13 @@ name = "clawreform-hands"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Hands system for clawREFORM by aegntic.ai — curated autonomous capability packages"
+description = "Hands system (stub) — minimal types for compilation"
 
 [dependencies]
 clawreform-types = { path = "../clawreform-types" }
 serde = { workspace = true }
 serde_json = { workspace = true }
-toml = { workspace = true }
 thiserror = { workspace = true }
-tracing = { workspace = true }
-uuid = { workspace = true }
 chrono = { workspace = true }
 dashmap = { workspace = true }
-
-[dev-dependencies]
-tokio-test = { workspace = true }
-tempfile = { workspace = true }
+uuid = { workspace = true }
