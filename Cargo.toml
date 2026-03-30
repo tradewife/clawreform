@@ -20,8 +20,8 @@ members = [
 version = "0.3.0"
 edition = "2021"
 license = "Apache-2.0 OR MIT"
-repository = "https://github.com/aegntic/clawreform"
-homepage = "https://aegntic.ai"
+repository = "https://github.com/tradewife/clawreform"
+homepage = "https://github.com/tradewife/clawreform"
 authors = ["ae.ltd", "aegntic.ai"]
 rust-version = "1.75"
 

@@ -2,13 +2,13 @@
   <img src="assets/branding/clawreform-logo-v2.png" width="220" alt="clawREFORM — open-source AI agent operating system written in Rust" />
 </p>
 
-<h1 align="center"><code>claw</code><strong>REFORM</strong></h1>
+<h1 align="center"><code>claw</code><strong>reform</strong></h1>
 
-<h3 align="center">The open-source AI Agent Operating System — built in Rust, built to last</h3>
+<h3 align="center">The Agent Operating System for the Resilient Token Protocol</h3>
 
 <p align="center">
-  <em>Not a framework. Not an SDK wrapper. An OS for AI agents.</em><br/>
-  <em>The only agent runtime that rewrites itself.</em>
+  <em>The agent OS where "don't rug" is a cryptographic invariant.</em><br/>
+  <em>Built in Rust. Enforced on-chain.</em>
 </p>
 
 <p align="center">
@@ -22,11 +22,9 @@
 </p>
 
 <p align="center">
-  <a href="https://clawreform.com">Website</a> •
-  <a href="https://clawreform.com/docs">Docs</a> •
-  <a href="https://x.com/clawreform">Twitter / X</a> •
-  <a href="https://skool.com/autoclaw">Community</a> •
-  <a href="https://github.com/aegntic/clawreform/discussions">Discussions</a>
+  <a href="https://github.com/tradewife/clawreform">Repository</a> •
+  <a href="https://github.com/tradewife/clawreform/issues">Issues</a> •
+  <a href="https://github.com/tradewife/clawreform/discussions">Discussions</a>
 </p>
 
 ---
@@ -38,7 +36,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    c l a w R E F O R M   ·   v 0 . 2 . 2                   │
-│                                                               by  ae.ltd     │
+│                                                     Resilient Token Protocol     │
 ├──────────────┬──────────────┬──────────────┬──────────────┬─────────────────┤
 │    146 K     │    141       │    27        │    60        │       0         │
 │  LINES OF    │   MODELS     │  PROVIDERS   │  BUNDLED     │   RUNTIME       │
