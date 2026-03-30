@@ -1,6 +1,6 @@
-# clawREFORM by aegntic.ai Organ System
+# Clawreform Organ System — Resilient Token Protocol
 
-clawREFORM by aegntic.ai treats agent context as a small set of first-class organ files rather than one undifferentiated prompt blob. These files live in an agent workspace, remain editable by humans, and are injected into the runtime in a deterministic order.
+Clawreform treats agent context as a small set of first-class organ files rather than one undifferentiated prompt blob. These files live in an agent workspace, remain editable by humans, and are injected into the runtime in a deterministic order. Under the Resilient Token Protocol, agent identity is constrained by on-chain program enforcement — the organ system defines how the agent thinks, but the program defines what it can do.
 
 ## Core Organs
 
@@ -80,7 +80,7 @@ This keeps the system inspectable without turning every transient thought into o
 
 ## Runtime Behavior
 
-When a workspace includes these files, clawREFORM by aegntic.ai:
+When a workspace includes these files, Clawreform:
 
 1. loads them as first-class workspace organs
 2. injects them into the runtime prompt in a deterministic order
@@ -91,8 +91,8 @@ When a workspace includes these files, clawREFORM by aegntic.ai:
 
 Generated organ files are branded with:
 
-- platform: `clawREFORM by aegntic.ai`
-- operator: `ae.ltd`
-- ecosystem: `aegntic.ai`
+- platform: `Clawreform Agent OS`
+- protocol: `Resilient Token Protocol (RTP)`
+- repository: `https://github.com/tradewife/clawreform`
 
 This keeps identity and provenance visible both to humans and to the runtime.

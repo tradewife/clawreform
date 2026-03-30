@@ -1,10 +1,12 @@
-# clawREFORM by aegntic.ai — Agent Instructions
+# Clawreform — Resilient Token Protocol Agent OS — Agent Instructions
 
 ## Project Overview
-clawREFORM by aegntic.ai is an open-source Agent Operating System written in Rust (14 crates).
+Clawreform is the off-chain Agent Operating System for the Resilient Token Protocol (RTP). Written in Rust (14 crates), it provides the agent runtime that plans, executes, and verifies on-chain operations under cryptographic enforcement.
 - Config: `~/.clawreform/config.toml`
 - Default API: `http://127.0.0.1:4332`
 - CLI binary: `target/release/clawreform` (or `target/debug/clawreform`)
+- Protocol thesis: "Don't rug" is a cryptographic invariant, not a social promise.
+- The on-chain program is the final arbiter. Agents propose and execute within enforced constraints.
 
 ## Build & Verify Workflow
 After every feature implementation, run ALL THREE checks:
@@ -125,7 +127,8 @@ taskkill //PID <pid> //F
 | `/api/a2a/tasks/{id}/status` | GET | Check external A2A task status |
 
 ## Architecture Notes
-- **Don't touch `clawreform-cli`** — user is actively building the interactive CLI
+- **Don't touch `clawreform-cli`** — active development in progress
+- RTP agent roles: Allocator (plan/propose), Executor (implement/execute), Verifier (audit/validate). All agents operate under on-chain constraint enforcement.
 - `KernelHandle` trait (defined in `clawreform-runtime`, implemented on `ClawReformKernel` in `clawreform-kernel`) avoids circular deps between runtime and kernel
 - `AppState` in `server.rs` bridges kernel to API routes
 - New routes must be registered in `server.rs` router AND implemented in `routes.rs`
